@@ -40,7 +40,7 @@
         }
         
         a:hover {
-            color: #ff5722;
+            color: #66b5ff;
         }
         
         /* Styling per i filetti delle sezioni */
@@ -130,26 +130,26 @@
         }
 
         .titolo-principale:hover {
-            color: #ff5722; /* Cambia colore al hover */
+            color: #66b5ff; /* Cambia colore al hover */
         }
 
         /* Stili per il testo posizionato */
-        .testo-basso-sinistra {
+        .testo-alto-sinistra {
             position: absolute;
-            bottom: 20px;
+            top: 20px;
             left: 20px;
             font-size: 1rem;
             color: #ffffff;
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Roboto', sans-serif; /* Aggiunge il font Lexend */
         }
         
-        .testo-basso-destra {
+        .testo-alto-destra {
             position: absolute;
-            bottom: 20px;
+            top: 20px;
             right: 20px;
             font-size: 1rem;
             color: #ffffff;
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Roboto', sans-serif; /* Aggiunge il font Lexend */
         }
         
         /* Pulsante per scorrere al contenuto principale */
@@ -206,7 +206,7 @@
         }
 
         .menu-close:hover {
-            color: #ff5722;
+            color: #66b5ff;
         }
 
         .menu-items {
@@ -218,40 +218,13 @@
             color: #ffffff;
             padding: 15px 0;
             display: block;
-            transition: color 0.3s ease, transform 0.3s ease;
+            transition: color 0.3s ease;
             font-family: 'Roboto', sans-serif; /* Aggiunge il font Lexend agli elementi del menu */
         }
 
         .menu-items a:hover {
-            color: #ff5722;
-            transform: translateX(10px); /* Piccola animazione al hover */
+            color: #66b5ff;
         }
-
-        /* Effetto di ingrandimento per il titolo quando il menu è aperto */
-        .titolo-principale.menu-active {
-            transform: scale(1.05);
-            color: #ff5722;
-        }
-
-        /* Animazione per gli elementi del menu */
-        .menu-items a {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.4s ease, transform 0.4s ease, color 0.3s ease;
-        }
-
-        .fullscreen-menu.active .menu-items a {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Aggiungiamo un delay incrementale per ogni elemento del menu */
-        .fullscreen-menu .menu-items a:nth-child(1) { transition-delay: 0.1s; }
-        .fullscreen-menu .menu-items a:nth-child(2) { transition-delay: 0.2s; }
-        .fullscreen-menu .menu-items a:nth-child(3) { transition-delay: 0.3s; }
-        .fullscreen-menu .menu-items a:nth-child(4) { transition-delay: 0.4s; }
-        .fullscreen-menu .menu-items a:nth-child(5) { transition-delay: 0.5s; }
-        .fullscreen-menu .menu-items a:nth-child(6) { transition-delay: 0.6s; }
 
         /* Sezioni del contenuto principale */
         main.contenitore {
@@ -285,38 +258,7 @@
             text-align: left; /* Giustifica a sinistra il contenuto delle sezioni */
         }
         
-        /* Footer per il contenuto principale */
-        footer {
-            border-top: 1px solid #333333;
-            padding: 30px 0;
-            margin-top: 50px;
-            position: relative;
-            text-align: center;
-        }
-
-        footer .credits-left {
-            position: absolute;
-            left: 20px;
-            bottom: 20px;
-            font-size: 0.9rem;
-        }
-
-        footer .credits-right {
-            position: absolute;
-            right: 20px;
-            bottom: 20px;
-            font-size: 0.9rem;
-        }
-
-        @media (max-width: 768px) {
-            footer .credits-left,
-            footer .credits-right {
-                position: static;
-                display: block;
-                text-align: center;
-                margin: 10px 0;
-            }
-        }
+        /* Media Queries per la responsività */
         @media (max-width: 768px) {
             .titolo-principale .primo-titolo {
                 font-size: 4rem;
@@ -330,18 +272,14 @@
                 font-size: 1.8rem;
             }
 
-            .testo-basso-sinistra, .testo-basso-destra {
+            .testo-alto-sinistra, .testo-alto-destra {
                 font-size: 0.9rem;
-                bottom: 15px;
-                text-align: center;
-            }
-
-            .testo-basso-sinistra {
-                left: 15px; 
-            }
-            
-            .testo-basso-destra {
+                top: 15px;
+                left: 15px;
                 right: 15px;
+                text-align: center;
+                position: static; /* Cambia a static per il posizionamento normale nel flusso */
+                margin-bottom: 10px;
             }
 
             .schermata-principale {
@@ -378,7 +316,7 @@
                 padding: 10px 0;
             }
 
-            .testo-basso-sinistra, .testo-basso-destra {
+            .testo-alto-sinistra, .testo-alto-destra {
                 font-size: 0.8rem;
             }
 
@@ -394,10 +332,12 @@
 </head>
 <body>
     <div class="schermata-principale" id="home">
+        <div class="testo-alto-sinistra">Matematica per il design ISIA U 2025</div>
         <h1 class="titolo-principale" id="menuTrigger">
             <span class="primo-titolo">Easing functions:</span>
             <span class="secondo-titolo">la matematica del movimento naturale</span>
         </h1>
+        <div class="testo-alto-destra">Coli Francesca e Riva Claudia</div>
         <div class="scroll-button" onclick="document.getElementById('contenuto-principale').scrollIntoView({behavior: 'smooth'})">
             ▼ Scorri giù
         </div>
@@ -407,8 +347,8 @@
             <div class="menu-items">
                 <a href="#storia">Storia</a>
                 <a href="#introduzione">Introduzione</a>
-                <a href="#funzioni-di-easing">Funzioni di easing</a>
-                <a href="#interpolazione-lineare">Interpolazione lineare</a>
+                <a href="#funzioni di easing">Funzioni di easing</a>
+                <a href="#interpolazione lineare">Interpolazione lineare</a>
                 <a href="#smoothstep">Smoothstep</a>
                 <a href="#bibliografia">Bibliografia</a>
             </div>
@@ -456,7 +396,7 @@
             </div>
         </section>
 
-        <section class="filetto" id="interpolazione-lineare">
+        <section class="filetto" id="interpolazione lineare">
             <h4 class="titolo-sezione">Interpolazione lineare</h4>
             <div class="contenuto-sezione">
                
@@ -475,7 +415,7 @@
             </div>
         </section>
 
-        <section class="filetto" id="funzioni-di-easing">
+        <section class="filetto" id="funzioni di easing">
             <h4 class="titolo-sezione">Funzioni di easing</h4>
             <div class="contenuto-sezione">
                
@@ -513,83 +453,4 @@
                 <p>
                 edge0 = il valore di inizio della transizione <br>
                 edge1 = il valore finale della transizione <br>  
-                x = il valore su cui si vuole interpolare </p>
-            </div>
-        </section>
-
-        <section class="filetto" id="bibliografia">
-            <h4 class="titolo-sezione">Bibliografia</h4>
-            <div class="contenuto-sezione">
-                <p>
-                    Robert Penner, "Programming Macromedia Flash MX", 2002<br>
-                    Animators Survival Kit di Richard Williams<br>
-                    The Illusion of Life: Disney Animation di Frank Thomas e Ollie Johnston
-                </p>
-            </div>
-        </section>
-    </main>
-
-    <footer>
-        <div class="credits-left">Matematica per il design ISIA U 2025</div>
-        <div class="credits-right">Coli Francesca e Riva Claudia</div>
-    </footer>
-
-    <script>
-        // Selezione degli elementi del DOM
-        const menuTrigger = document.getElementById('menuTrigger');
-        const fullscreenMenu = document.getElementById('fullscreenMenu');
-        const menuClose = document.getElementById('menuClose');
-        const menuItems = document.querySelectorAll('.menu-items a');
-        
-        // Funzione per aprire il menu
-        function openMenu() {
-            fullscreenMenu.classList.add('active');
-            menuTrigger.classList.add('menu-active');
-            document.body.style.overflow = 'hidden'; // Impedisce lo scrolling della pagina quando il menu è aperto
-        }
-        
-        // Funzione per chiudere il menu
-        function closeMenu() {
-            fullscreenMenu.classList.remove('active');
-            menuTrigger.classList.remove('menu-active');
-            document.body.style.overflow = ''; // Ripristina lo scrolling della pagina
-        }
-        
-        // Event listener per il click sul titolo principale
-        menuTrigger.addEventListener('click', openMenu);
-        
-        // Event listener per il click sul pulsante di chiusura
-        menuClose.addEventListener('click', closeMenu);
-        
-        // Event listener per i click sugli elementi del menu
-        menuItems.forEach(item => {
-            item.addEventListener('click', () => {
-                closeMenu();
-                // Piccolo ritardo prima dello scroll per permettere al menu di chiudersi
-                setTimeout(() => {
-                    const targetId = item.getAttribute('href').substring(1);
-                    const targetElement = document.getElementById(targetId);
-                    if (targetElement) {
-                        targetElement.scrollIntoView({behavior: 'smooth'});
-                    }
-                }, 300);
-            });
-        });
-        
-        // Chiudi il menu se si clicca all'esterno del menu stesso
-        fullscreenMenu.addEventListener('click', function(event) {
-            // Verifica se il click è avvenuto direttamente sul fullscreenMenu (e non sui suoi figli)
-            if (event.target === fullscreenMenu) {
-                closeMenu();
-            }
-        });
-        
-        // Chiudi il menu se si preme il tasto Escape
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape' && fullscreenMenu.classList.contains('active')) {
-                closeMenu();
-            }
-        });
-    </script>
-</body>
-</html>
+                x = il valore su cui si vuole interpolare </p
