@@ -1,456 +1,621 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <title>Curve di interpolazione</title>
-    <meta name="author"      content="Coli Francesca e Riva Claudia">
-    <meta name="description" content="Un'esplorazione delle curve di interpolazione e delle funzioni di easing per il design.">
-    <meta name="viewport"    content="width=device-width, initial-scale=1">
+   <meta charset="utf-8">
+   <title>Curve di interpolazione</title>
+   <meta name="author"      content="Coli Francesca e Riva Claudia">
+   <meta name="description" content="Un'esplorazione delle curve di interpolazione e delle funzioni di easing per il design.">
+   <meta name="viewport"    content="width=device-width, initial-scale=1">
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter&family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet"   href="./assets/css/main.css">
-    <style>
-        /* Stile per sfondo nero e testo bianco */
-        body {
-            background-color: #000000;
-            color: #ffffff;
-            margin: 0;
-            padding: 0;
-            font-family: 'Inter', sans-serif;
-            overflow-x: hidden; /* Evita lo scrolling orizzontale non desiderato */
-        }
-        
-        /* Colore degli header e titoli */
-        h1, h2, h3, h4, h5, h6, .titolo-sezione {
-            color: #ffffff;
-        }
-        
-        /* Styling per la sezione principale */
-        .contenitore {
-            background-color: #000000;
-        }
-        
-        /* Styling per i link */
-        a {
-            color: #3a9fff;
-            text-decoration: none; /* Rimuovi la sottolineatura predefinita */
-        }
-        
-        a:hover {
-            color: #66b5ff;
-        }
-        
-        /* Styling per i filetti delle sezioni */
-        .filetto {
-            border-color: #333333;
-        }
-        
-        /* Styling per le iframe */
-        iframe {
-            background-color: #111111;
-            border: 1px solid #333333;
-            width: 100%; /* Rendi le iframe responsive */
-            max-width: 800px; /* Limita la larghezza massima per una migliore leggibilità */
-            display: block; /* Centra l'iframe se si usa margin: auto */
-            margin: 20px auto; /* Aggiungi un po' di margine e centra */
-        }
-        
-        /* Styling per le liste */
-        ul li {
-            color: #ffffff;
-            margin-bottom: 5px;
-        }
-        
-        /* Styling per le immagini, aggiungendo un sottile bordo */
-        img {
-            border: 1px solid #333333;
-            max-width: 100%; /* Rendi le immagini responsive */
-            height: auto;
-            display: block; /* Centra l'immagine se si usa margin: auto */
-            margin: 20px auto; /* Aggiungi un po' di margine e centra */
-        }
-        
-        /* Styling per header */
-        header {
-            border-bottom: 1px solid #333333;
-            padding: 20px 0;
-            text-align: center;
-            font-family: 'Roboto', sans-serif; /* Aggiunge il font Lexend all'header */
-        }
-        
-        header h1 {
-            margin: 0;
-            font-family: 'Roboto', sans-serif; /* Aggiunge il font Lexend al titolo nell'header */
-        }
+   <link rel="preconnect" href="https://fonts.googleapis.com">
+   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+   <link href="https://fonts.googleapis.com/css2?family=Inter&family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-        /* Aggiustamenti specifici per migliorare la leggibilità */
-        .contenuto-sezione p {
-            line-height: 1.6;
-            margin-bottom: 15px;
-            text-align: left; /* Giustifica a sinistra il testo di ogni sezione */
-        }
 
-        /* Stile per la schermata principale */
-        .schermata-principale {
-            height: 100vh;
-            width: 100%;
-            display: flex;
-            flex-direction: column; /* Organizza gli elementi in colonna */
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            background-color: #000000;
-            padding: 20px; /* Aggiungi un po' di padding per evitare che il testo tocchi i bordi */
-            box-sizing: border-box; /* Include padding nel calcolo della larghezza/altezza */
-            font-family: 'Roboto', sans-serif; /* Aggiunge il font Lexend a tutti gli elementi della prima schermata */
-        }
+   <link rel="stylesheet"   href="./assets/css/main.css">
+   <style>
+       /* Stile per sfondo nero e testo bianco */
+       body {
+           background-color: #000000;
+           color: #ffffff;
+           margin: 0;
+           padding: 0;
+           font-family: 'Inter', sans-serif;
+           overflow-x: hidden; /* Evita lo scrolling orizzontale non desiderato */
+       }
+      
+       /* Colore degli header e titoli */
+       h1, h2, h3, h4, h5, h6, .titolo-sezione {
+           color: #ffffff;
+       }
+      
+       /* Styling per la sezione principale */
+       .contenitore {
+           background-color: #000000;
+       }
+      
+       /* Styling per i link */
+       a {
+           color: #3a9fff;
+           text-decoration: none; /* Rimuovi la sottolineatura predefinita */
+       }
+      
+       a:hover {
+           color: #66b5ff;
+       }
+      
+       /* Styling per i filetti delle sezioni */
+       .filetto {
+           border-color: #333333;
+       }
+      
+       /* Styling per le iframe */
+       iframe {
+           background-color: #111111;
+           border: 1px solid #333333;
+           width: 100%; /* Rendi le iframe responsive */
+           max-width: 800px; /* Limita la larghezza massima per una migliore leggibilità */
+           display: block; /* Centra l'iframe se si usa margin: auto */
+           margin: 20px auto; /* Aggiungi un po' di margine e centra */
+       }
+      
+       /* Styling per le liste */
+       ul li {
+           color: #ffffff;
+           margin-bottom: 5px;
+       }
+      
+       /* Styling per le immagini, aggiungendo un sottile bordo */
+       img {
+           border: 1px solid #333333;
+           max-width: 100%; /* Rendi le immagini responsive */
+           height: auto;
+           display: block; /* Centra l'immagine se si usa margin: auto */
+           margin: 20px auto; /* Aggiungi un po' di margine e centra */
+       }
+      
+       /* Styling per header */
+       header {
+           border-bottom: 1px solid #333333;
+           padding: 20px 0;
+           text-align: center;
+           font-family: 'Roboto', sans-serif; /* Aggiunge il font Lexend all'header */
+       }
+      
+       header h1 {
+           margin: 0;
+           font-family: 'Roboto', sans-serif; /* Aggiunge il font Lexend al titolo nell'header */
+       }
 
-        /* Stile per il titolo principale con la prima parte più grande */
-        .titolo-principale {
-            text-align: center;
-            color: #ffffff;
-            cursor: pointer; /* Indica che il titolo è cliccabile */
-            transition: color 0.3s ease; /* Transizione per il colore al hover */
-            font-family: 'Roboto', sans-serif; /* Aggiunge il font Lexend al titolo principale */
-        }
 
-        /* Stile specifico per la prima parte del titolo */
-        .titolo-principale .primo-titolo {
-            font-size: 6rem; /* Più grande rispetto alla seconda parte */
-            display: block;
-        }
+       /* Aggiustamenti specifici per migliorare la leggibilità */
+       .contenuto-sezione p {
+           line-height: 1.6;
+           margin-bottom: 15px;
+           text-align: left; /* Giustifica a sinistra il testo di ogni sezione */
+       }
 
-        /* Stile specifico per la seconda parte del titolo */
-        .titolo-principale .secondo-titolo {
-            font-size: 4rem; /* Più piccolo rispetto alla prima parte */
-            display: block;
-        }
 
-        .titolo-principale:hover {
-            color: #66b5ff; /* Cambia colore al hover */
-        }
+       /* Stile per la schermata principale */
+       .schermata-principale {
+           height: 100vh;
+           width: 100%;
+           display: flex;
+           flex-direction: column; /* Organizza gli elementi in colonna */
+           justify-content: center;
+           align-items: center;
+           position: relative;
+           background-color: #000000;
+           padding: 20px; /* Aggiungi un po' di padding per evitare che il testo tocchi i bordi */
+           box-sizing: border-box; /* Include padding nel calcolo della larghezza/altezza */
+           font-family: 'Roboto', sans-serif; /* Aggiunge il font Lexend a tutti gli elementi della prima schermata */
+       }
 
-        /* Stili per il testo posizionato */
-        .testo-alto-sinistra {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            font-size: 1rem;
-            color: #ffffff;
-            font-family: 'Roboto', sans-serif; /* Aggiunge il font Lexend */
-        }
-        
-        .testo-alto-destra {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            font-size: 1rem;
-            color: #ffffff;
-            font-family: 'Roboto', sans-serif; /* Aggiunge il font Lexend */
-        }
-        
-        /* Pulsante per scorrere al contenuto principale */
-        .scroll-button {
-            position: absolute;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: #ffffff;
-            cursor: pointer;
-            padding: 10px;
-            text-align: center;
-            opacity: 0.7;
-            transition: opacity 0.3s;
-            font-family: 'Roboto', sans-serif; /* Aggiunge il font Lexend */
-        }
 
-        .scroll-button:hover {
-            opacity: 1;
-        }
+       /* Stile per il titolo principale con la prima parte più grande */
+       .titolo-principale {
+           text-align: center;
+           color: #ffffff;
+           cursor: pointer; /* Indica che il titolo è cliccabile */
+           transition: color 0.3s ease; /* Transizione per il colore al hover */
+           font-family: 'Roboto', sans-serif; /* Aggiunge il font Lexend al titolo principale */
+       }
 
-        /* Stili per il menu a schermo intero */
-        .fullscreen-menu {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.95); /* Sfondo semi-trasparente */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.4s ease-in-out, visibility 0.4s ease-in-out;
-            font-family: 'Roboto', sans-serif; /* Aggiunge il font Lexend al menu */
-        }
 
-        .fullscreen-menu.active {
-            opacity: 1;
-            visibility: visible;
-        }
+       /* Stile specifico per la prima parte del titolo */
+       .titolo-principale .primo-titolo {
+           font-size: 6rem; /* Più grande rispetto alla seconda parte */
+           display: block;
+       }
 
-        .menu-close {
-            position: absolute;
-            top: 30px;
-            right: 30px;
-            font-size: 2.5rem;
-            color: #ffffff;
-            cursor: pointer;
-            transition: color 0.3s ease;
-        }
 
-        .menu-close:hover {
-            color: #66b5ff;
-        }
+       /* Stile specifico per la seconda parte del titolo */
+       .titolo-principale .secondo-titolo {
+           font-size: 4rem; /* Più piccolo rispetto alla prima parte */
+           display: block;
+       }
 
-        .menu-items {
-            text-align: center;
-        }
 
-        .menu-items a {
-            font-size: 2.5rem;
-            color: #ffffff;
-            padding: 15px 0;
-            display: block;
-            transition: color 0.3s ease;
-            font-family: 'Roboto', sans-serif; /* Aggiunge il font Lexend agli elementi del menu */
-        }
+       .titolo-principale:hover {
+           color: #66b5ff; /* Cambia colore al hover */
+       }
 
-        .menu-items a:hover {
-            color: #66b5ff;
-        }
 
-        /* Sezioni del contenuto principale */
-        main.contenitore {
-            padding: 40px 20px;
-            max-width: 960px; /* Limita la larghezza del contenuto per una migliore leggibilità */
-            margin: 0 auto; /* Centra il contenitore */
-        }
+       /* Stili per il testo posizionato */
+       .testo-alto-sinistra {
+           position: absolute;
+           top: 20px;
+           left: 20px;
+           font-size: 1rem;
+           color: #ffffff;
+           font-family: 'Roboto', sans-serif; /* Aggiunge il font Lexend */
+       }
+      
+       .testo-alto-destra {
+           position: absolute;
+           top: 20px;
+           right: 20px;
+           font-size: 1rem;
+           color: #ffffff;
+           font-family: 'Roboto', sans-serif; /* Aggiunge il font Lexend */
+       }
+      
+       /* Pulsante per scorrere al contenuto principale */
+       .scroll-button {
+           position: absolute;
+           bottom: 30px;
+           left: 50%;
+           transform: translateX(-50%);
+           color: #ffffff;
+           cursor: pointer;
+           padding: 10px;
+           text-align: center;
+           opacity: 0.7;
+           transition: opacity 0.3s;
+           font-family: 'Roboto', sans-serif; /* Aggiunge il font Lexend */
+       }
 
-        section.filetto {
-            border-top: 1px solid #333333;
-            padding-top: 40px;
-            margin-top: 40px;
-        }
 
-        section.filetto:first-of-type {
-            border-top: none; /* Rimuovi il bordo superiore dalla prima sezione */
-            margin-top: 0;
-            padding-top: 0;
-        }
+       .scroll-button:hover {
+           opacity: 1;
+       }
 
-        .titolo-sezione {
-            font-size: 2.5rem;
-            margin-bottom: 30px;
-            text-align: center;
-            font-family: 'Roboto', sans-serif; /* Aggiunge il font Lexend ai titoli delle sezioni */
-        }
 
-        .contenuto-sezione {
-            font-size: 1.1rem;
-            margin-bottom: 40px;
-            text-align: left; /* Giustifica a sinistra il contenuto delle sezioni */
-        }
-        
-        /* Media Queries per la responsività */
-        @media (max-width: 768px) {
-            .titolo-principale .primo-titolo {
-                font-size: 4rem;
-            }
+       /* Stili per il menu a schermo intero */
+       .fullscreen-menu {
+           position: fixed;
+           top: 0;
+           left: 0;
+           width: 100%;
+           height: 100%;
+           background-color: rgba(0, 0, 0, 0.95); /* Sfondo semi-trasparente */
+           display: flex;
+           justify-content: center;
+           align-items: center;
+           flex-direction: column;
+           z-index: 1000;
+           opacity: 0;
+           visibility: hidden;
+           transition: opacity 0.4s ease-in-out, visibility 0.4s ease-in-out;
+           font-family: 'Roboto', sans-serif; /* Aggiunge il font Lexend al menu */
+       }
 
-            .titolo-principale .secondo-titolo {
-                font-size: 2.5rem;
-            }
 
-            .menu-items a {
-                font-size: 1.8rem;
-            }
+       .fullscreen-menu.active {
+           opacity: 1;
+           visibility: visible;
+       }
 
-            .testo-alto-sinistra, .testo-alto-destra {
-                font-size: 0.9rem;
-                top: 15px;
-                left: 15px;
-                right: 15px;
-                text-align: center;
-                position: static; /* Cambia a static per il posizionamento normale nel flusso */
-                margin-bottom: 10px;
-            }
 
-            .schermata-principale {
-                justify-content: flex-start; /* Allinea gli elementi in alto */
-                padding-top: 80px; /* Aggiungi padding per il testo superiore */
-            }
+       .menu-close {
+           position: absolute;
+           top: 30px;
+           right: 30px;
+           font-size: 2.5rem;
+           color: #ffffff;
+           cursor: pointer;
+           transition: color 0.3s ease;
+       }
 
-            .menu-close {
-                top: 20px;
-                right: 20px;
-                font-size: 2rem;
-            }
 
-            .titolo-sezione {
-                font-size: 2rem;
-            }
+       .menu-close:hover {
+           color: #66b5ff;
+       }
 
-            .contenuto-sezione {
-                font-size: 1rem;
-            }
-        }
 
-        @media (max-width: 480px) {
-            .titolo-principale .primo-titolo {
-                font-size: 3rem;
-            }
+       .menu-items {
+           text-align: center;
+       }
 
-            .titolo-principale .secondo-titolo {
-                font-size: 2rem;
-            }
 
-            .menu-items a {
-                font-size: 1.5rem;
-                padding: 10px 0;
-            }
+       .menu-items a {
+           font-size: 2.5rem;
+           color: #ffffff;
+           padding: 15px 0;
+           display: block;
+           transition: color 0.3s ease;
+           font-family: 'Roboto', sans-serif; /* Aggiunge il font Lexend agli elementi del menu */
+       }
 
-            .testo-alto-sinistra, .testo-alto-destra {
-                font-size: 0.8rem;
-            }
 
-            .menu-close {
-                font-size: 1.8rem;
-            }
+       .menu-items a:hover {
+           color: #66b5ff;
+       }
 
-            .titolo-sezione {
-                font-size: 1.8rem;
-            }
-        }
-    </style>
+
+       /* Sezioni del contenuto principale */
+       main.contenitore {
+           padding: 40px 20px;
+           max-width: 960px; /* Limita la larghezza del contenuto per una migliore leggibilità */
+           margin: 0 auto; /* Centra il contenitore */
+       }
+
+
+       section.filetto {
+           border-top: 1px solid #333333;
+           padding-top: 40px;
+           margin-top: 40px;
+       }
+
+
+       section.filetto:first-of-type {
+           border-top: none; /* Rimuovi il bordo superiore dalla prima sezione */
+           margin-top: 0;
+           padding-top: 0;
+       }
+
+
+       .titolo-sezione {
+           font-size: 2.5rem;
+           margin-bottom: 30px;
+           text-align: center;
+           font-family: 'Roboto', sans-serif; /* Aggiunge il font Lexend ai titoli delle sezioni */
+       }
+
+
+       .contenuto-sezione {
+           font-size: 1.1rem;
+           margin-bottom: 40px;
+           text-align: left; /* Giustifica a sinistra il contenuto delle sezioni */
+       }
+      
+       /* Media Queries per la responsività */
+       @media (max-width: 768px) {
+           .titolo-principale .primo-titolo {
+               font-size: 4rem;
+           }
+
+
+           .titolo-principale .secondo-titolo {
+               font-size: 2.5rem;
+           }
+
+
+           .menu-items a {
+               font-size: 1.8rem;
+           }
+
+
+           .testo-alto-sinistra, .testo-alto-destra {
+               font-size: 0.9rem;
+               top: 15px;
+               left: 15px;
+               right: 15px;
+               text-align: center;
+               position: static; /* Cambia a static per il posizionamento normale nel flusso */
+               margin-bottom: 10px;
+           }
+
+
+           .schermata-principale {
+               justify-content: flex-start; /* Allinea gli elementi in alto */
+               padding-top: 80px; /* Aggiungi padding per il testo superiore */
+           }
+
+
+           .menu-close {
+               top: 20px;
+               right: 20px;
+               font-size: 2rem;
+           }
+
+
+           .titolo-sezione {
+               font-size: 2rem;
+           }
+
+
+           .contenuto-sezione {
+               font-size: 1rem;
+           }
+       }
+
+
+       @media (max-width: 480px) {
+           .titolo-principale .primo-titolo {
+               font-size: 3rem;
+           }
+
+
+           .titolo-principale .secondo-titolo {
+               font-size: 2rem;
+           }
+
+
+           .menu-items a {
+               font-size: 1.5rem;
+               padding: 10px 0;
+           }
+
+
+           .testo-alto-sinistra, .testo-alto-destra {
+               font-size: 0.8rem;
+           }
+
+
+           .menu-close {
+               font-size: 1.8rem;
+           }
+
+
+           .titolo-sezione {
+               font-size: 1.8rem;
+           }
+       }
+   </style>
 </head>
 <body>
-    <div class="schermata-principale" id="home">
-        <div class="testo-alto-sinistra">Matematica per il design ISIA U 2025</div>
-        <h1 class="titolo-principale" id="menuTrigger">
-            <span class="primo-titolo">Easing functions:</span>
-            <span class="secondo-titolo">la matematica del movimento naturale</span>
-        </h1>
-        <div class="testo-alto-destra">Coli Francesca e Riva Claudia</div>
-        <div class="scroll-button" onclick="document.getElementById('contenuto-principale').scrollIntoView({behavior: 'smooth'})">
-            ▼ Scorri giù
-        </div>
-        
-        <div class="fullscreen-menu" id="fullscreenMenu">
-            <div class="menu-close" id="menuClose">✕</div>
-            <div class="menu-items">
-                <a href="#storia">Storia</a>
-                <a href="#introduzione">Introduzione</a>
-                <a href="#funzioni di easing">Funzioni di easing</a>
-                <a href="#interpolazione lineare">Interpolazione lineare</a>
-                <a href="#smoothstep">Smoothstep</a>
-                <a href="#bibliografia">Bibliografia</a>
-            </div>
-        </div>
-    </div>
+   <div class="schermata-principale" id="home">
+       <div class="testo-alto-sinistra">Matematica per il design ISIA U 2025</div>
+       <h1 class="titolo-principale" id="menuTrigger">
+           <span class="primo-titolo">Easing functions:</span>
+           <span class="secondo-titolo">la matematica del movimento naturale</span>
+       </h1>
+       <div class="testo-alto-destra">Coli Francesca e Riva Claudia</div>
+       <div class="scroll-button" onclick="document.getElementById('contenuto-principale').scrollIntoView({behavior: 'smooth'})">
+           ▼ Scorri giù
+       </div>
+      
+       <div class="fullscreen-menu" id="fullscreenMenu">
+           <div class="menu-close" id="menuClose">✕</div>
+           <div class="menu-items">
+               <a href="#storia">Storia</a>
+               <a href="#introduzione">Introduzione</a>
+               <a href="#funzioni di easing">Funzioni di easing</a>
+               <a href="#interpolazione lineare">Interpolazione lineare</a>
+               <a href="#smoothstep">Smoothstep</a>
+               <a href="#bibliografia">Bibliografia</a>
+           </div>
+       </div>
+   </div>
 
-    <main class="contenitore" id="contenuto-principale">
 
-        <header>
-            <span></span>
-            <h1>Teoria</h1>
-        </header>
+   <main class="contenitore" id="contenuto-principale">
 
-                <section class="filetto" id="storia">
-            <h4 class="titolo-sezione">Storia</h4>
-            <div class="contenuto-sezione">
-                <p>
-                    Nell'animazione classica, pionieri come gli animatori della Disney applicavano intuitivamente principi di accelerazione e decelerazione per rendere i movimenti più realistici. Queste tecniche, come il "slow in" e "slow out", erano basate sull'osservazione del mondo reale e venivano implementate manualmente, fotogramma per fotogramma, per conferire naturalezza e espressività ai personaggi. Sebbene non formalizzate matematicamente, queste pratiche hanno gettato le basi per le future easing functions.
-                </p>
-                <p>
-                    Con l'avvento dell'animazione digitale, si è reso necessario un approccio più sistematico e riproducibile. Robert Penner, sviluppatore e autore, ha svolto un ruolo cruciale in questo processo. Negli anni '90, ha introdotto una serie di equazioni matematiche note come "Penner easing equations", che modellano vari tipi di movimento, come ease-in, ease-out, bounce ed elastic. Queste funzioni sono state implementate in numerose librerie di animazione e continuano a essere ampiamente utilizzate.
-                </p>
-                <iframe scrolling=no frameborder=0 height=500 src="./assets/sketches/funzioni_trigonometriche/"></iframe>
-            </div>
-        </section>
 
-        <section class="filetto" id="introduzione">
-            <h4 class="titolo-sezione">Introduzione</h4>
-            <div class="contenuto-sezione">
-                <p>
-                Nel contesto dell'animazione, del motion design e del design dell'interfaccia, il termine easing indica il modo in cui varia la velocità di un movimento nel tempo. Piuttosto che mantenere una velocità costante, l'easing introduce fasi di accelerazione, decelerazione o entrambe, conferendo al movimento un aspetto più realistico e naturale. </p>
-                <p>
-                E' possibile animare un oggetto in maniera lineare, ovvero con un movimento che mantiene una velocità costante dall'inizio alla fine. Questo tipo di interpolazione, detta lineare (o LERP), è semplice da calcolare: </p>
-                <p>
-                f(t) = t </p> 
-                <p>
-                Non prevede accelerazioni né rallentamenti; ogni intervallo di tempo corrisponde a uno spostamento uniforme. Tuttavia, questo tipo di movimento appare artificiale e poco credibile. Nel mondo reale, quasi nulla si muove in modo perfettamente regolare: gli oggetti tendono ad accelerare all'avvio, rallentare in fase di arresto, oscillare, rimbalzare, oppure seguire traiettorie irregolari dettate da forze come la gravità e l'inerzia. </p>
-                <p>
-                Anche il modo in cui percepiamo il movimento è influenzato da questi principi fisici. Il nostro cervello si aspetta variazioni di ritmo nei movimenti, altrimenti li interpreta come innaturali, meccanici o privi di espressività. Ed è proprio qui che interviene l'easing: attraverso specifiche funzioni matematiche, consente di modulare il ritmo del movimento in modo credibile e comunicativo. </p>
-                <p>
-                In definitiva, è il ritmo dato da queste curve di transizione a determinare se un'animazione appare viva oppure artificiale.
-                </p>
+       <header>
+           <span></span>
+           <h1>Teoria</h1>
+       </header>
 
-                <iframe scrolling=no frameborder=0 height=500 src="./assets/sketches/funzioni_trigonometriche/"></iframe>
-            </div>
-        </section>
 
-        <section class="filetto" id="interpolazione lineare">
-            <h4 class="titolo-sezione">Interpolazione lineare</h4>
-            <div class="contenuto-sezione">
-               
-                <p> 
-                La Linear Interpolation (LERP) è la forma più semplice di interpolazione, dove il progresso è direttamente proporzionale al tempo. È utile per movimenti a velocità costante, ma spesso risulta innaturale per simulare movimenti reali.
-                </p>
-                <p>
-                Formula:
-                </p>
-                <p>
-                LERP(A,B;t)=A+(B−A)⋅t,t∈[0,1] </p>
-                <p>
-                Il grafico è quindi una semplice diagonale: la distanza percorsa è sempre uguale ogni secondo ovvero si ha un progresso costante (a metà del tempo l'animazione è al 50% del percorso).
-                </p>
-                <iframe scrolling=no frameborder=0 height=500 src="./assets/sketches/linea_tratteggiata/"></iframe>
-            </div>
-        </section>
+               <section class="filetto" id="storia">
+           <h4 class="titolo-sezione">Storia</h4>
+           <div class="contenuto-sezione">
+               <p>
+                   Nell'animazione classica, pionieri come gli animatori della Disney applicavano intuitivamente principi di accelerazione e decelerazione per rendere i movimenti più realistici. Queste tecniche, come il "slow in" e "slow out", erano basate sull'osservazione del mondo reale e venivano implementate manualmente, fotogramma per fotogramma, per conferire naturalezza e espressività ai personaggi. Sebbene non formalizzate matematicamente, queste pratiche hanno gettato le basi per le future easing functions.
+               </p>
+               <p>
+                   Con l'avvento dell'animazione digitale, si è reso necessario un approccio più sistematico e riproducibile. Robert Penner, sviluppatore e autore, ha svolto un ruolo cruciale in questo processo. Negli anni '90, ha introdotto una serie di equazioni matematiche note come "Penner easing equations", che modellano vari tipi di movimento, come ease-in, ease-out, bounce ed elastic. Queste funzioni sono state implementate in numerose librerie di animazione e continuano a essere ampiamente utilizzate.
+               </p>
+               <iframe scrolling=no frameborder=0 height=500 src="./assets/sketches/funzioni_trigonometriche/"></iframe>
+           </div>
+       </section>
 
-        <section class="filetto" id="funzioni di easing">
-            <h4 class="titolo-sezione">Funzioni di easing</h4>
-            <div class="contenuto-sezione">
-               
-                <p>
-                Ma se applichiamo un easing, la curva cambia e questo significa che la velocità non è costante: può partire piano e accelerare, o partire veloce e rallentare, o fare entrambe.
-                </p>
-                <p> 
-                In un grafico: <br>
-                - L'asse x è il tempo, da 0 a 1 (cioè dall'inizio alla fine dell'animazione). <br>
-                - L'asse y è l'avanzamento del movimento, anch'esso da 0 a 1. <br>
-                </p>
-                <p>
-                Le easing functions più comuni sono: </p>
-                <p>
-                - Ease-In → parte piano, poi accelera (esempio: f(t) = t²). <br>
-                - Ease-Out → parte veloce, poi rallenta (esempio: f(t) = 1 − (1 − t)²). <br>
-                - Ease-In-Out → piano all'inizio, accelera, poi frena alla fine (esempio: f(t) = t²(3 - 2t)).
-                </p>
-                <iframe scrolling=no frameborder=0 height=500 src="./assets/sketches/linea_tratteggiata/"></iframe>
-            </div>
-        </section>
 
-        
+       <section class="filetto" id="introduzione">
+           <h4 class="titolo-sezione">Introduzione</h4>
+           <div class="contenuto-sezione">
+               <p>
+               Nel contesto dell'animazione, del motion design e del design dell'interfaccia, il termine easing indica il modo in cui varia la velocità di un movimento nel tempo. Piuttosto che mantenere una velocità costante, l'easing introduce fasi di accelerazione, decelerazione o entrambe, conferendo al movimento un aspetto più realistico e naturale. </p>
+               <p>
+               E' possibile animare un oggetto in maniera lineare, ovvero con un movimento che mantiene una velocità costante dall'inizio alla fine. Questo tipo di interpolazione, detta lineare (o LERP), è semplice da calcolare: </p>
+               <p>
+               f(t) = t </p>
+               <p>
+               Non prevede accelerazioni né rallentamenti; ogni intervallo di tempo corrisponde a uno spostamento uniforme. Tuttavia, questo tipo di movimento appare artificiale e poco credibile. Nel mondo reale, quasi nulla si muove in modo perfettamente regolare: gli oggetti tendono ad accelerare all'avvio, rallentare in fase di arresto, oscillare, rimbalzare, oppure seguire traiettorie irregolari dettate da forze come la gravità e l'inerzia. </p>
+               <p>
+               Anche il modo in cui percepiamo il movimento è influenzato da questi principi fisici. Il nostro cervello si aspetta variazioni di ritmo nei movimenti, altrimenti li interpreta come innaturali, meccanici o privi di espressività. Ed è proprio qui che interviene l'easing: attraverso specifiche funzioni matematiche, consente di modulare il ritmo del movimento in modo credibile e comunicativo. </p>
+               <p>
+               In definitiva, è il ritmo dato da queste curve di transizione a determinare se un'animazione appare viva oppure artificiale.
+               </p>
+
+
+               <iframe scrolling=no frameborder=0 height=500 src="./assets/sketches/funzioni_trigonometriche/"></iframe>
+           </div>
+       </section>
+
+
+       <section class="filetto" id="interpolazione lineare">
+           <h4 class="titolo-sezione">Interpolazione lineare</h4>
+           <div class="contenuto-sezione">
+             
+               <p>
+               La Linear Interpolation (LERP) è la forma più semplice di interpolazione, dove il progresso è direttamente proporzionale al tempo. È utile per movimenti a velocità costante, ma spesso risulta innaturale per simulare movimenti reali.
+               </p>
+               <p>
+               Formula:
+               </p>
+               <p>
+               LERP(A,B;t)=A+(B−A)⋅t,t∈[0,1] </p>
+               <p>
+               Il grafico è quindi una semplice diagonale: la distanza percorsa è sempre uguale ogni secondo ovvero si ha un progresso costante (a metà del tempo l'animazione è al 50% del percorso).
+               </p>
+               <iframe scrolling=no frameborder=0 height=500 src="./assets/sketches/linea_tratteggiata/"></iframe>
+           </div>
+       </section>
+
+
+       <section class="filetto" id="funzioni di easing">
+           <h4 class="titolo-sezione">Funzioni di easing</h4>
+           <div class="contenuto-sezione">
+             
+               <p>
+               Ma se applichiamo un easing, la curva cambia e questo significa che la velocità non è costante: può partire piano e accelerare, o partire veloce e rallentare, o fare entrambe.
+               </p>
+               <p>
+               In un grafico: <br>
+               - L'asse x è il tempo, da 0 a 1 (cioè dall'inizio alla fine dell'animazione). <br>
+               - L'asse y è l'avanzamento del movimento, anch'esso da 0 a 1. <br>
+               </p>
+               <p>
+               Le easing functions più comuni sono: </p>
+               <p>
+               - Ease-In → parte piano, poi accelera (esempio: f(t) = t²). <br>
+               - Ease-Out → parte veloce, poi rallenta (esempio: f(t) = 1 − (1 − t)²). <br>
+               - Ease-In-Out → piano all'inizio, accelera, poi frena alla fine (esempio: f(t) = t²(3 - 2t)).
+               </p>
+               <iframe scrolling=no frameborder=0 height=500 src="./assets/sketches/linea_tratteggiata/"></iframe>
+           </div>
+       </section>
+
+
+      
 <section class="filetto" id="smoothstep">
-            <h4 class="titolo-sezione">Smoothstep</h4>
-            <div class="contenuto-sezione">
-                 <p> 
-                Gli "smoothstep" (Ease-In-Out) sono funzioni matematiche utilizzate comunemente in grafica computerizzata, shader (es. GLSL), animazioni e interpolazioni per creare transizioni morbide tra due valori. È particolarmente utile per creare dissolvenze, interpolazioni di colore o attivazioni graduali di effetti.<br>
-                La versione più comune di smoothstep comprende tre argomenti: </p> 
+           <h4 class="titolo-sezione">Smoothstep</h4>
+           <div class="contenuto-sezione">
                 <p>
-                smoothstep (edge0, edge1, x) </p>  
-                 <p>
-                In pratica la funzione smoothstep restituisce un valore che varia dolcemente da 0 a 1 quando x si sposta da edge0 a edge1. 
-                </p>
+               Gli "smoothstep" (Ease-In-Out) sono funzioni matematiche utilizzate comunemente in grafica computerizzata, shader (es. GLSL), animazioni e interpolazioni per creare transizioni morbide tra due valori. È particolarmente utile per creare dissolvenze, interpolazioni di colore o attivazioni graduali di effetti.<br>
+               La versione più comune di smoothstep comprende tre argomenti: </p>
+               <p>
+               smoothstep (edge0, edge1, x) </p> 
                 <p>
-                edge0 = il valore di inizio della transizione <br>
-                edge1 = il valore finale della transizione <br>  
-                x = il valore su cui si vuole interpolare </p
+               In pratica la funzione smoothstep restituisce un valore che varia dolcemente da 0 a 1 quando x si sposta da edge0 a edge1.
+               </p>
+               <p>
+               edge0 = il valore di inizio della transizione <br>
+               edge1 = il valore finale della transizione <br> 
+               x = il valore su cui si vuole interpolare </p>
+               <p></p>
+               <p>
+               Formula: </p>
+               <p>
+                f(t) = t² (3 − 2t)
+               </p>
+               <p>
+               - Velocità e accelerazione iniziano e finiscono gradualmente. <br>
+               - Molto usato per transizioni fluide (dissolvenze o movimenti organici).
+               </p>
+               <p>
+               Una versione ancora più morbida del precedente è lo "smootherstep", dove anche la derivata seconda (accelerazione) inizia e finisce gradualmente, evitando qualsiasi scatto. <br> </p>
+               <p>
+               Formula:
+               </p>
+               <p>
+               f(t) = t³ (t (6t − 15) + 10)
+               </p>
+               <p>
+               - Perfetto per movimenti delicati, naturali, quasi impercettibili. <br>
+               - Usato per animazioni eleganti o quando serve un movimento continuo senza "spigoli".
+               </p>
+           </div>
+       </section>
+
+
+<section class="filetto" id="bibliografia">
+           <h4 class="titolo-sezione">Bibliografia</h4>
+           <div class="contenuto-sezione">
+               <ul>
+                   <li>
+                       <a target="_blank" href="https://en.wikipedia.org/wiki/Trigonometric_functions">Wikipedia (en): Trigonometric functions</a>
+                   </li>
+                   <li>
+                       <a target="_blank" href="https://en.wikipedia.org/wiki/B%C3%A9zier_curve">Wikipedia (en): Bézier curve</a>
+                   </li>
+                   <li>
+                       <a target="_blank" href="https://easings.net/">Easings.net - Visual tool for easing functions</a>
+                   </li>
+                   <li>
+                       <a target="_blank" href="https://en.wikipedia.org/wiki/Linear_interpolation">Wikipedia (en): Linear interpolation</a>
+                   </li>
+                   <li>
+                       <a target="_blank" href="https://en.wikipedia.org/wiki/Smoothstep">Wikipedia (en): Smoothstep</a>
+                   </li>
+                   <li>Maecenas quis ante sit amet neque cursus hendrerit ac sit amet nisl</li>
+                   <li>In cursus aliquam odio eu eleifend</li>
+                   <li>Ut sed auctor magna</li>
+                   <li>In hac habitasse platea dictumst</li>
+                   <li>Aliquam aliquam nisl mi</li>
+                   <li>Phasellus et orci elit</li>
+                   <li>Maecenas vehicula elit et lacus accumsan consequat</li>
+                   <li>Nam consectetur lacus ante</li>
+                   <li>Vestibulum et massa dolor</li>
+                   <li>Aenean condimentum blandit eros non dapibus</li>
+                   <li>Maecenas quam nulla, porta eu nibh in, cursus iaculis mauris</li>
+                   <li>Phasellus sit amet nulla eu tellus dictum cursus</li>
+                   <li>Sed aliquet, ipsum sit amet tempus semper, augue velit consequat mi, et gravida sem purus a quam</li>
+               </ul>
+
+
+           </div>
+       </section>
+   </main>
+
+
+   <script>
+       // Script per gestire lo scorrimento fluido e il menu a schermo intero
+       document.addEventListener('DOMContentLoaded', function() {
+           // Riferimenti agli elementi
+           const menuTrigger = document.getElementById('menuTrigger');
+           const fullscreenMenu = document.getElementById('fullscreenMenu');
+           const menuClose = document.getElementById('menuClose');
+           const menuLinks = document.querySelectorAll('.menu-items a');
+          
+           // Gestione apertura menu
+           if (menuTrigger && fullscreenMenu) {
+               menuTrigger.addEventListener('click', function() {
+                   fullscreenMenu.classList.add('active');
+                   document.body.style.overflow = 'hidden'; // Impedisce lo scrolling della pagina
+               });
+           }
+          
+           // Gestione chiusura menu
+           if (menuClose && fullscreenMenu) {
+               menuClose.addEventListener('click', function() {
+                   fullscreenMenu.classList.remove('active');
+                   document.body.style.overflow = ''; // Ripristina lo scrolling
+               });
+           }
+          
+           // Gestione link del menu
+           menuLinks.forEach(link => {
+               link.addEventListener('click', function(event) {
+                   event.preventDefault(); // Previene il comportamento di default del link (salto immediato)
+                   fullscreenMenu.classList.remove('active');
+                   document.body.style.overflow = ''; // Ripristina lo scrolling
+                  
+                   // Scorrimento alla sezione
+                   const targetId = this.getAttribute('href').substring(1);
+                   const targetElement = document.getElementById(targetId);
+                   if (targetElement) {
+                       targetElement.scrollIntoView({behavior: 'smooth'});
+                   }
+               });
+           });
+          
+           // Gestione pulsante di scorrimento
+           const scrollButton = document.querySelector('.scroll-button');
+           if (scrollButton) {
+               scrollButton.addEventListener('click', function() {
+                   const contenutoPrincipale = document.getElementById('contenuto-principale');
+                   if (contenutoPrincipale) {
+                       contenutoPrincipale.scrollIntoView({behavior: 'smooth'});
+                   }
+               });
+           }
+       });
+   </script>
+</body>
+</html>
+
