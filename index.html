@@ -2,14 +2,14 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Curve di interpolazione</title>
+    <title>Easing functions</title>
     <meta name="author"      content="Coli Francesca e Riva Claudia">
     <meta name="description" content="Un'esplorazione delle curve di interpolazione e delle funzioni di easing per il design.">
     <meta name="viewport"    content="width=device-width, initial-scale=1">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter&family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter&family=Lexend:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet"   href="./assets/css/main.css">
     <style>
@@ -17,15 +17,19 @@
         body {
             background-color: #000000;
             color: #ffffff;
-            margin: 0;
-            padding: 0;
-            font-family: 'Inter', sans-serif;
+            /* Nuovi stili per i margini e la larghezza massima come laboratorio_easing_personalizzato.html */
+            max-width: 1200px; /* Stessa larghezza massima del file del laboratorio */
+            margin: 0 auto; /* Centra il body nella pagina */
+            padding: 20px; /* Stesso padding del file del laboratorio */
+            
+            font-family: 'Roboto', sans-serif; /* Changed font to Roboto */
             overflow-x: hidden; /* Evita lo scrolling orizzontale non desiderato */
         }
         
         /* Colore degli header e titoli */
         h1, h2, h3, h4, h5, h6, .titolo-sezione {
             color: #ffffff;
+            font-family: 'Lexend', sans-serif; /* Keep Lexend for titles for consistency with original design */
         }
         
         /* Styling per la sezione principale */
@@ -35,12 +39,12 @@
         
         /* Styling per i link */
         a {
-            color: #3a9fff;
+            color: #ff5722;
             text-decoration: none; /* Rimuovi la sottolineatura predefinita */
         }
         
         a:hover {
-            color: #66b5ff;
+            color: #ff5722;
         }
         
         /* Styling per i filetti delle sezioni */
@@ -48,14 +52,15 @@
             border-color: #333333;
         }
         
-        /* Styling per le iframe */
+        /* Styling per le iframe - RIMOSSO IL BORDO */
         iframe {
             background-color: #111111;
-            border: 1px solid #333333;
+            border: none; /* RIMOSSO IL BORDO QUI */
             width: 100%; /* Rendi le iframe responsive */
-            max-width: 800px; /* Limita la larghezza massima per una migliore leggibilità */
+            max-width: 500px; /* Limita la larghezza massima per una migliore leggibilità */
             display: block; /* Centra l'iframe se si usa margin: auto */
-            margin: 20px auto; /* Aggiungi un po' di margine e centra */
+            margin: 0 0 0 auto; /* Sposta l'iframe a destra */
+            height: 400px; /* Altezza fissa per le iframe */
         }
         
         /* Styling per le liste */
@@ -64,13 +69,118 @@
             margin-bottom: 5px;
         }
         
-        /* Styling per le immagini, aggiungendo un sottile bordo */
+        /* Styling per le immagini, RIMOSSO IL SOTTILE BORDO */
         img {
-            border: 1px solid #333333;
+            border: none; /* RIMOSSO IL BORDO ANCHE DALLE IMMAGINI GIF */
             max-width: 100%; /* Rendi le immagini responsive */
             height: auto;
             display: block; /* Centra l'immagine se si usa margin: auto */
             margin: 20px auto; /* Aggiungi un po' di margine e centra */
+        }
+
+        /* Nuovo stile per il contenitore del testo affianco alle immagini */
+        .contenuto-sezione .text-content {
+            flex: 1; /* Permette al testo di occupare lo spazio, espandendosi */
+            min-width: 300px; /* Larghezza minima per il testo su schermi larghi */
+        }
+
+        /* Nuovo stile per allineare le immagini/iframe affiancate (in colonna) */
+        .image-comparison-container,
+        .iframe-container {
+            display: flex;
+            flex-direction: column; /* Impila gli elementi verticalmente */
+            align-items: flex-end; /* Allinea gli elementi a destra all'interno della colonna */
+            flex: 0 0 500px; /* Larghezza fissa per la colonna degli elementi, non si espande/riduce molto */
+            max-width: 500px; /* Limita la larghezza massima della colonna */
+            gap: 20px; /* Spazio tra gli elementi impilati */
+            margin: 0 0 0 auto; /* Spinge il contenitore a destra, annullando margini */
+        }
+        .image-comparison-container img {
+            width: 100%; /* Rende le immagini riempire la loro colonna */
+            height: auto;
+            border: none; /* RIMOSSO IL BORDO ANCHE QUI PER SICUREZZA */
+            margin: 0; /* Rimuovi margini predefiniti per img, gestiti dal gap del genitore */
+        }
+
+        /* Modifiche per la sezione di contenuto per layout a due colonne */
+        .contenuto-sezione {
+            display: flex;
+            flex-wrap: wrap; /* Permette il wrapping su schermi piccoli */
+            gap: 40px; /* Spazio tra le colonne (testo e immagini/iframe) */
+            align-items: flex-start; /* Allinea gli elementi in alto */
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+            text-align: left; /* Giustifica a sinistra il contenuto delle sezioni */
+        }
+
+        /* STILE SPECIFICO PER LA SEZIONE SMOOTHSTEP - TESTO A SINISTRA, ANIMAZIONE A DESTRA */
+        section#smoothstep .contenuto-sezione {
+            flex-direction: row; /* Imposta la direzione delle colonne a riga */
+            align-items: flex-start; /* Allinea in alto */
+            flex-wrap: wrap; /* Permette il wrapping su schermi più piccoli */
+        }
+
+        section#smoothstep .contenuto-sezione .text-content {
+            flex: 1 1 45%; /* Occupare quasi metà spazio per le due colonne di testo */
+            min-width: 300px; /* Larghezza minima */
+            text-align: left; /* Assicura allineamento a sinistra */
+            margin: 0; /* Annulla margin: auto per testo */
+            padding-right: 20px; /* Spazio tra testo e iframe */
+            box-sizing: border-box; /* Include padding nella larghezza */
+        }
+
+        section#smoothstep .contenuto-sezione .iframe-container {
+            flex: 0 0 500px; /* Larghezza fissa per l'iframe */
+            max-width: 500px; /* Impedisce che l'iframe diventi troppo largo */
+            margin: 0 0 0 auto; /* Sposta l'iframe a destra */
+            order: 2; /* Sposta l'iframe a destra */
+        }
+        
+        /* Rimuovi l'ordine specifico per il secondo blocco di testo in smoothstep, ora è un blocco unico */
+        /*
+        section#smoothstep .contenuto-sezione .text-content:nth-of-type(2) {
+            order: 1; 
+            flex: 1 1 45%; 
+            padding-right: 20px; 
+        }
+        */
+
+
+        @media (max-width: 768px) {
+            .image-comparison-container,
+            .iframe-container {
+                flex-direction: column; /* Gli elementi rimangono impilati */
+                justify-content: center; /* Centra gli elementi */
+                flex: 1 1 auto; /* Rimuovi la larghezza fissa */
+                max-width: 100%; /* Permetti che occupino tutta la larghezza */
+                margin-left: auto; /* Annulla margin-left: auto quando si impila */
+                margin-right: auto;
+            }
+            .image-comparison-container img,
+            .iframe-container iframe {
+                max-width: 100%; /* I singoli elementi occupano tutta la larghezza del loro contenitore */
+                width: auto; /* Annulla width: 100% per max-width */
+            }
+            .contenuto-sezione .text-content {
+                flex: 1 1 100%; /* Testo occupa tutta la larghezza */
+                min-width: unset; /* Rimuovi la larghezza minima */
+            }
+            /* Su schermi più piccoli, le colonne si impilano */
+            .contenuto-sezione {
+                flex-direction: column;
+                gap: 20px; /* Ridotto il gap quando si impila */
+            }
+
+            /* Reset per mobile: smoothstep torna in colonna */
+            section#smoothstep .contenuto-sezione {
+                flex-direction: column;
+            }
+            section#smoothstep .contenuto-sezione .text-content,
+            section#smoothstep .contenuto-sezione .iframe-container {
+                order: unset; /* Rimuovi l'ordine specifico */
+                flex: 1 1 100%; /* Occupano tutta la larghezza */
+                padding-right: 0; /* Rimuovi il padding extra su mobile */
+            }
         }
         
         /* Styling per header */
@@ -78,12 +188,12 @@
             border-bottom: 1px solid #333333;
             padding: 20px 0;
             text-align: center;
-            font-family: 'Roboto', sans-serif; /* Aggiunge il font Lexend all'header */
+            font-family: 'Lexend', sans-serif; /* Assicurati che sia Lexend, come nel resto */
         }
         
         header h1 {
             margin: 0;
-            font-family: 'Roboto', sans-serif; /* Aggiunge il font Lexend al titolo nell'header */
+            font-family: 'Lexend', sans-serif; /* Assicurati che sia Lexend, come nel resto */
         }
 
         /* Aggiustamenti specifici per migliorare la leggibilità */
@@ -96,17 +206,21 @@
         /* Stile per la schermata principale */
         .schermata-principale {
             height: 100vh;
-            width: 100%;
+            width: 100%; /* Lascia al 100% per riempire lo spazio disponibile all'interno del body limitato */
             display: flex;
             flex-direction: column; /* Organizza gli elementi in colonna */
             justify-content: center;
             align-items: center;
             position: relative;
             background-color: #000000;
-            padding: 20px; /* Aggiungi un po' di padding per evitare che il testo tocchi i bordi */
-            box-sizing: border-box; /* Include padding nel calcolo della larghezza/altezza */
-            font-family: 'Roboto', sans-serif; /* Aggiunge il font Lexend a tutti gli elementi della prima schermata */
+            /* box-sizing: border-box; */ /* Già nel body */
+            font-family: 'Lexend', sans-serif; /* Aggiunge il font Lexend a tutti gli elementi della prima schermata */
         }
+        /* Aggiungi padding alla schermata principale se vuoi un padding interno oltre quello del body */
+        /* .schermata-principale {
+            padding-left: 20px;
+            padding-right: 20px;
+        } */
 
         /* Stile per il titolo principale con la prima parte più grande */
         .titolo-principale {
@@ -114,7 +228,7 @@
             color: #ffffff;
             cursor: pointer; /* Indica che il titolo è cliccabile */
             transition: color 0.3s ease; /* Transizione per il colore al hover */
-            font-family: 'Roboto', sans-serif; /* Aggiunge il font Lexend al titolo principale */
+            font-family: 'Lexend', sans-serif; /* Aggiunge il font Lexend al titolo principale */
         }
 
         /* Stile specifico per la prima parte del titolo */
@@ -125,31 +239,43 @@
 
         /* Stile specifico per la seconda parte del titolo */
         .titolo-principale .secondo-titolo {
-            font-size: 4rem; /* Più piccolo rispetto alla prima parte */
+            font-size: 3.2rem; /* Ridotto per evitare l'orfano */
             display: block;
         }
 
         .titolo-principale:hover {
-            color: #66b5ff; /* Cambia colore al hover */
+            color: #ff5722; /* Cambia colore al hover */
         }
 
         /* Stili per il testo posizionato */
-        .testo-alto-sinistra {
-            position: absolute;
-            top: 20px;
-            left: 20px;
+        .testo-alto-sinistra,
+        .testo-alto-destra {
+            position: absolute; /* Rimane assoluto per non rispettare i margini del body */
             font-size: 1rem;
             color: #ffffff;
-            font-family: 'Roboto', sans-serif; /* Aggiunge il font Lexend */
+            font-family: 'Lexend', sans-serif; /* Aggiunge il font Lexend */
+        }
+
+        .testo-alto-sinistra {
+            top: 20px;
+            left: 20px;
         }
         
         .testo-alto-destra {
-            position: absolute;
             top: 20px;
             right: 20px;
-            font-size: 1rem;
-            color: #ffffff;
-            font-family: 'Roboto', sans-serif; /* Aggiunge il font Lexend */
+        }
+
+        .testo-alto-sinistra a,
+        .testo-alto-destra a {
+            color: inherit; /* Inherit color from parent div */
+            text-decoration: none; /* Remove underline */
+            transition: color 0.3s ease;
+        }
+
+        .testo-alto-sinistra a:hover,
+        .testo-alto-destra a:hover {
+            color: #ff5722; /* Change color on hover */
         }
         
         /* Pulsante per scorrere al contenuto principale */
@@ -164,7 +290,7 @@
             text-align: center;
             opacity: 0.7;
             transition: opacity 0.3s;
-            font-family: 'Roboto', sans-serif; /* Aggiunge il font Lexend */
+            font-family: 'Lexend', sans-serif; /* Aggiunge il font Lexend */
         }
 
         .scroll-button:hover {
@@ -187,7 +313,7 @@
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.4s ease-in-out, visibility 0.4s ease-in-out;
-            font-family: 'Roboto', sans-serif; /* Aggiunge il font Lexend al menu */
+            font-family: 'Lexend', sans-serif; /* Aggiunge il font Lexend al menu */
         }
 
         .fullscreen-menu.active {
@@ -206,7 +332,7 @@
         }
 
         .menu-close:hover {
-            color: #66b5ff;
+            color: #ff5722;
         }
 
         .menu-items {
@@ -219,17 +345,18 @@
             padding: 15px 0;
             display: block;
             transition: color 0.3s ease;
-            font-family: 'Roboto', sans-serif; /* Aggiunge il font Lexend agli elementi del menu */
+            font-family: 'Lexend', sans-serif; /* Aggiunge il font Lexend agli elementi del menu */
         }
 
         .menu-items a:hover {
-            color: #66b5ff;
+            color: #ff5722;
         }
 
         /* Sezioni del contenuto principale */
         main.contenitore {
             padding: 40px 20px;
-            max-width: 960px; /* Limita la larghezza del contenuto per una migliore leggibilità */
+            /* Modificato max-width per allinearsi ai margini desiderati */
+            max-width: 1160px; /* 1200px (body max-width) - 40px (20px padding su ogni lato) */
             margin: 0 auto; /* Centra il contenitore */
         }
 
@@ -249,23 +376,83 @@
             font-size: 2.5rem;
             margin-bottom: 30px;
             text-align: center;
-            font-family: 'Roboto', sans-serif; /* Aggiunge il font Lexend ai titoli delle sezioni */
+            font-family: 'Lexend', sans-serif; /* Aggiunge il font Lexend ai titoli delle sezioni */
         }
 
-        .contenuto-sezione {
-            font-size: 1.1rem;
-            margin-bottom: 40px;
-            text-align: left; /* Giustifica a sinistra il contenuto delle sezioni */
+        /* Stile per il dropdown del menu Sitografia (non più dropdown per i link interni) */
+        .dropdown {
+            /* Mantenuto per non rompere il css della span del triangolino, anche se non più usato come dropdown */
+            position: relative;
+            display: inline-block;
         }
+
+        .dropdown-content {
+            /* Questo blocco non dovrebbe più essere necessario, ma lo lascio per coerenza se c'erano altri usi */
+            display: none; /* Nascondi il dropdown content per i link esterni */
+            position: absolute;
+            background-color: #222; /* Sfondo del dropdown */
+            min-width: 200px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            right: 0; /* Allinea a destra rispetto al genitore */
+            top: 100%; /* Sotto il titolo */
+            padding: 10px 0;
+            border-radius: 5px;
+        }
+
+        .dropdown-content a {
+            color: white;
+            padding: 8px 16px;
+            text-decoration: none;
+            display: block;
+            text-align: left;
+            font-size: 1rem; /* Dimensione del testo dei link */
+        }
+
+        .dropdown-content a:hover {
+            background-color: #333;
+            color: #ff5722;
+        }
+
+        /* .dropdown:hover .dropdown-content { display: block; } */ /* Rimosso, non è più un dropdown classico */
         
+        /* Footer styles */
+        footer {
+            background-color: #000000;
+            color: #ffffff;
+            text-align: center; /* Allinea al centro */
+            padding: 30px 0; 
+            font-size: 0.9rem;
+            border-top: 1px solid #333333;
+            margin-top: 50px;
+            font-family: 'Roboto', sans-serif; /* Ensure Roboto for the footer text */
+            max-width: 100%; /* Estende il footer su tutta la larghezza */
+            margin-left: 0; /* Assicura che parta dal bordo sinistro */
+            margin-right: 0; /* Assicura che arrivi al bordo destro */
+            box-sizing: border-box; /* Include padding e bordo nella larghezza totale */
+        }
+        footer p {
+            line-height: 1.8; /* Aumenta l'interlinea per renderlo meno compatto */
+            margin: 0 auto; /* Centra il paragrafo */
+            max-width: unset; /* Rimuovi la larghezza massima per il paragrafo */
+            white-space: nowrap; /* Mantiene il testo su una singola riga se possibile */
+            overflow: hidden; /* Nasconde il testo che sfora */
+            text-overflow: ellipsis; /* Aggiunge i puntini di sospensione se il testo è troncato */
+        }
+
+        /* Stile per le formule MathJax */
+        .MathJax {
+            color: #ff5722 !important; /* Colora le formule di arancione */
+        }
+
         /* Media Queries per la responsività */
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) { /* Modificato per un breakpoint più coerente */
             .titolo-principale .primo-titolo {
                 font-size: 4rem;
             }
 
             .titolo-principale .secondo-titolo {
-                font-size: 2.5rem;
+                font-size: 2.5rem; /* Adattato per schermi più piccoli */
             }
 
             .menu-items a {
@@ -282,6 +469,8 @@
                 margin-bottom: 10px;
             }
 
+            /* La schermata principale ora rispetta il max-width e padding del body,
+               quindi la sua larghezza sarà fluidamente adattata. */
             .schermata-principale {
                 justify-content: flex-start; /* Allinea gli elementi in alto */
                 padding-top: 80px; /* Aggiungi padding per il testo superiore */
@@ -298,17 +487,46 @@
             }
 
             .contenuto-sezione {
-                font-size: 1rem;
+                /* Su schermi più piccoli, il layout a due colonne viene annullato */
+                flex-direction: column;
+                gap: 20px; /* Ridotto il gap quando si impila */
+            }
+            .contenuto-sezione .text-content {
+                flex: 1 1 100%; /* Il testo occupa tutta la larghezza */
+                min-width: unset; /* Rimuovi la larghezza minima */
+            }
+            .image-comparison-container,
+            .iframe-container {
+                flex-direction: column; /* Gli elementi rimangono impilati */
+                justify-content: center; /* Centra gli elementi */
+                flex: 1 1 auto; /* Rimuovi la larghezza fissa */
+                max-width: 100%; /* Permetti che occupino tutta la larghezza */
+                margin-left: auto; /* Annulla margin-left: auto quando si impila */
+                margin-right: auto;
+            }
+            .image-comparison-container img,
+            .iframe-container iframe {
+                max-width: 100%; /* I singoli elementi occupano tutta la larghezza del loro contenitore */
+                width: auto; /* Annulla width: 100% per max-width */
+            }
+
+            footer p {
+                white-space: normal; /* Permette il wrap del testo su mobile */
+                max-width: 800px; /* Ripristina una larghezza leggibile per il testo del footer su mobile */
+                margin: 0 auto;
             }
         }
 
-        @media (max-width: 480px) {
+        @media (max-width: 768px) {
+            body {
+                padding: 10px; /* Ridotto padding su schermi molto piccoli */
+            }
             .titolo-principale .primo-titolo {
                 font-size: 3rem;
             }
 
             .titolo-principale .secondo-titolo {
-                font-size: 2rem;
+                font-size: 2rem; /* Adattato per schermi ancora più piccoli */
             }
 
             .menu-items a {
@@ -329,15 +547,28 @@
             }
         }
     </style>
+    <script type="text/javascript" id="MathJax-script" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
 </head>
 <body>
     <div class="schermata-principale" id="home">
-        <div class="testo-alto-sinistra">Matematica per il design ISIA U 2025</div>
+        <div class="testo-alto-sinistra"></div> 
         <h1 class="titolo-principale" id="menuTrigger">
             <span class="primo-titolo">Easing functions:</span>
             <span class="secondo-titolo">la matematica del movimento naturale</span>
         </h1>
-        <div class="testo-alto-destra">Coli Francesca e Riva Claudia</div>
+        <div class="testo-alto-destra"><a href="laboratorio_easing_personalizzato.html">Laboratorio easing personalizzato</a></div>
         <div class="scroll-button" onclick="document.getElementById('contenuto-principale').scrollIntoView({behavior: 'smooth'})">
             ▼ Scorri giù
         </div>
@@ -346,176 +577,168 @@
             <div class="menu-close" id="menuClose">✕</div>
             <div class="menu-items">
                 <a href="#storia">Storia</a>
-                <a href="#introduzione">Introduzione</a>
-                <a href="#funzioni di easing">Funzioni di easing</a>
+                <a href="#cos'è l'easing">Cos'è l'easing</a>
                 <a href="#interpolazione lineare">Interpolazione lineare</a>
+                <a href="#funzioni di easing">Funzioni di easing</a>
                 <a href="#smoothstep">Smoothstep</a>
-                <a href="#bibliografia">Bibliografia</a>
-            </div>
+                <a href="#sitografia">Sitografia</a> </div>
         </div>
     </div>
 
     <main class="contenitore" id="contenuto-principale">
 
-        <header>
-            <span></span>
-            <h1>Teoria</h1>
-        </header>
-
-                <section class="filetto" id="storia">
+        <section class="filetto" id="storia">
             <h4 class="titolo-sezione">Storia</h4>
             <div class="contenuto-sezione">
-                <p>
-                    Nell'animazione classica, pionieri come gli animatori della Disney applicavano intuitivamente principi di accelerazione e decelerazione per rendere i movimenti più realistici. Queste tecniche, come il "slow in" e "slow out", erano basate sull'osservazione del mondo reale e venivano implementate manualmente, fotogramma per fotogramma, per conferire naturalezza e espressività ai personaggi. Sebbene non formalizzate matematicamente, queste pratiche hanno gettato le basi per le future easing functions.
-                </p>
-                <p>
-                    Con l'avvento dell'animazione digitale, si è reso necessario un approccio più sistematico e riproducibile. Robert Penner, sviluppatore e autore, ha svolto un ruolo cruciale in questo processo. Negli anni '90, ha introdotto una serie di equazioni matematiche note come "Penner easing equations", che modellano vari tipi di movimento, come ease-in, ease-out, bounce ed elastic. Queste funzioni sono state implementate in numerose librerie di animazione e continuano a essere ampiamente utilizzate.
-                </p>
-                <iframe scrolling=no frameborder=0 height=500 src="./assets/sketches/funzioni_trigonometriche/"></iframe>
+                <div class="text-content">
+                    <p>
+                        Nell'animazione classica, pionieri come gli animatori della Disney applicavano intuitivamente principi di accelerazione e decelerazione per rendere i movimenti più realistici. Queste tecniche, come il "slow in" e "slow out", erano basate sull'osservazione del mondo reale e venivano implementate manualmente, fotogramma per fotogramma, per conferire naturalezza e espressività ai personaggi. Sebbene non formalizzate matematicamente, queste pratiche hanno gettato le basi per le future easing functions.
+                    </p>
+                    <p>
+                        Con l'avvento dell'animazione digitale, si è reso necessario un approccio più sistematico e riproducibile. Robert Penner, sviluppatore e autore, ha svolto un ruolo cruciale in questo processo. Negli anni '90, ha introdotto una serie di equazioni matematiche note come "Penner easing equations", che modellano vari tipi di movimento, come ease-in, ease-out, bounce ed elastic. Queste funzioni sono state implementate in numerose librerie di animazione e continuano a essere ampiamente utilizzate.
+                    </p>
+                </div>
+                <div class="image-comparison-container">
+                    <img src="./assets/gifs/robin_hood_gif.gif" alt="Animazione Robin Hood">
+                    <img src="./assets/gifs/robin_hood_finale.gif.gif" alt="Animazione Robin Hood Finale">
+                </div>
             </div>
         </section>
 
-        <section class="filetto" id="introduzione">
-            <h4 class="titolo-sezione">Introduzione</h4>
+        <section class="filetto" id="cos'è l'easing">
+            <h4 class="titolo-sezione">Cos'è l'easing</h4>
             <div class="contenuto-sezione">
-                <p>
-                Nel contesto dell'animazione, del motion design e del design dell'interfaccia, il termine easing indica il modo in cui varia la velocità di un movimento nel tempo. Piuttosto che mantenere una velocità costante, l'easing introduce fasi di accelerazione, decelerazione o entrambe, conferendo al movimento un aspetto più realistico e naturale. </p>
-                <p>
-                E' possibile animare un oggetto in maniera lineare, ovvero con un movimento che mantiene una velocità costante dall'inizio alla fine. Questo tipo di interpolazione, detta lineare (o LERP), è semplice da calcolare: </p>
-                <p>
-                f(t) = t </p> 
-                <p>
-                Non prevede accelerazioni né rallentamenti; ogni intervallo di tempo corrisponde a uno spostamento uniforme. Tuttavia, questo tipo di movimento appare artificiale e poco credibile. Nel mondo reale, quasi nulla si muove in modo perfettamente regolare: gli oggetti tendono ad accelerare all'avvio, rallentare in fase di arresto, oscillare, rimbalzare, oppure seguire traiettorie irregolari dettate da forze come la gravità e l'inerzia. </p>
-                <p>
-                Anche il modo in cui percepiamo il movimento è influenzato da questi principi fisici. Il nostro cervello si aspetta variazioni di ritmo nei movimenti, altrimenti li interpreta come innaturali, meccanici o privi di espressività. Ed è proprio qui che interviene l'easing: attraverso specifiche funzioni matematiche, consente di modulare il ritmo del movimento in modo credibile e comunicativo. </p>
-                <p>
-                In definitiva, è il ritmo dato da queste curve di transizione a determinare se un'animazione appare viva oppure artificiale.
-                </p>
-
-                <iframe scrolling=no frameborder=0 height=500 src="./assets/sketches/funzioni_trigonometriche/"></iframe>
+                <div class="text-content">
+                    <p>
+                    Nel contesto dell'animazione, del motion design e del design dell'interfaccia, il termine easing indica il modo in cui varia la velocità di un movimento nel tempo. Piuttosto che mantenere una velocità costante, l'easing introduce fasi di accelerazione, decelerazione o entrambe, conferendo al movimento un aspetto più realistico e naturale. </p>
+                    <p>
+                    È possibile animare un oggetto in maniera lineare, ovvero con un movimento che mantiene una velocità costante dall'inizio alla fine. Questo tipo di interpolazione, detta lineare (o LERP), è semplice da calcolare: </p>
+                    <p>
+                    $$f(t) = t$$
+                    </p> 
+                    <p>
+                    Non prevede accelerazioni né rallentamenti; ogni intervallo di tempo corrisponde a uno spostamento uniforme. Tuttavia, questo tipo di movimento appare artificiale e poco credibile. Nel mondo reale, quasi nulla si muove in modo perfettamente regolare: gli oggetti tendono ad accelerare all'avvio, rallentare in fase di arresto, oscillare, rimbalzare, oppure seguire traiettorie irregolari dettate da forze come la gravità e l'inerzia. </p>
+                    <p>
+                    Anche il modo in cui percepiamo il movimento è influenzato da questi principi fisici. Il nostro cervello si aspetta variazioni di ritmo nei movimenti, altrimenti li interpreta come innaturali, meccanici o privi di espressività. Ed è proprio qui che interviene l'easing: attraverso specifiche funzioni matematiche, consente di modulare il ritmo del movimento in modo credibile e comunicativo. </p>
+                    <p>
+                    In definitiva, è il ritmo dato da queste curve di transizione a determinare se un'animazione appare viva oppure artificiale.
+                    </p>
+                </div>
+                <div class="image-comparison-container">
+                    <img src="./assets/gifs/aereo_easing_gif.gif" alt="Animazione Aereo Easing">
+                    <img src="./assets/gifs/aereo_irl_gif.gif" alt="Animazione Aereo IRL">
+                </div>
             </div>
         </section>
 
         <section class="filetto" id="interpolazione lineare">
             <h4 class="titolo-sezione">Interpolazione lineare</h4>
             <div class="contenuto-sezione">
-               
-                <p> 
-                La Linear Interpolation (LERP) è la forma più semplice di interpolazione, dove il progresso è direttamente proporzionale al tempo. È utile per movimenti a velocità costante, ma spesso risulta innaturale per simulare movimenti reali.
-                </p>
-                <p>
-                Formula:
-                </p>
-                <p>
-                LERP(A,B;t)=A+(B−A)⋅t,t∈[0,1] </p>
-                <p>
-                Il grafico è quindi una semplice diagonale: la distanza percorsa è sempre uguale ogni secondo ovvero si ha un progresso costante (a metà del tempo l'animazione è al 50% del percorso).
-                </p>
-                <iframe scrolling=no frameborder=0 height=500 src="./assets/sketches/linea_tratteggiata/"></iframe>
+               <div class="text-content">
+                    <p> 
+                    La Linear Interpolation (LERP) è la forma più semplice di interpolazione, dove il progresso è direttamente proporzionale al tempo. È utile per movimenti a velocità costante, ma spesso risulta innaturale per simulare movimenti reali.
+                    </p>
+                    <p>
+                    $$LERP(a,b,t) = a + (b-a) \cdot t$$
+                    </p>
+                    <p>
+                    Il grafico è quindi una semplice diagonale: la distanza percorsa è sempre uguale ogni secondo ovvero si ha un progresso costante (a metà del tempo l'animazione è al 50% del percorso).
+                    </p>
+                </div>
+                <div class="iframe-container">
+                    <iframe src="esercizio_lineare.html?easing=linear" frameborder="0"></iframe>
+                </div>
             </div>
         </section>
 
         <section class="filetto" id="funzioni di easing">
             <h4 class="titolo-sezione">Funzioni di easing</h4>
             <div class="contenuto-sezione">
-               
-                <p>
-                Ma se applichiamo un easing, la curva cambia e questo significa che la velocità non è costante: può partire piano e accelerare, o partire veloce e rallentare, o fare entrambe.
-                </p>
-                <p> 
-                In un grafico: <br>
-                - L'asse x è il tempo, da 0 a 1 (cioè dall'inizio alla fine dell'animazione). <br>
-                - L'asse y è l'avanzamento del movimento, anch'esso da 0 a 1. <br>
-                </p>
-                <p>
-                Le easing functions più comuni sono: </p>
-                <p>
-                - Ease-In → parte piano, poi accelera (esempio: f(t) = t²). <br>
-                - Ease-Out → parte veloce, poi rallenta (esempio: f(t) = 1 − (1 − t)²). <br>
-                - Ease-In-Out → piano all'inizio, accelera, poi frena alla fine (esempio: f(t) = t²(3 - 2t)).
-                </p>
-                <iframe scrolling=no frameborder=0 height=500 src="./assets/sketches/linea_tratteggiata/"></iframe>
+               <div class="text-content">
+                    <p>
+                    Ma se applichiamo un easing, la curva cambia e questo significa che la velocità non è costante: può partire piano e accelerare, o partire veloce e rallentare, o fare entrambe.
+                    </p>
+                    <p> 
+                    In un grafico: <br>
+                    - L'asse x è il tempo, da 0 a 1 (cioè dall'inizio alla fine dell'animazione). <br>
+                    - L'asse y è l'avanzamento del movimento, anch'esso da 0 a 1. <br>
+                    </p>
+                    <p>
+                    Le easing functions più comuni sono: </p>
+                    <p>
+                    - Ease-In &rarr; parte piano, poi accelera: $$f(t) = t^2$$ <br>
+                    - Ease-Out &rarr; parte veloce, poi rallenta: $$f(t) = 1 - (1 - t)^2$$ <br>
+                    - Ease-In-Out &rarr; piano all'inizio, accelera, poi frena alla fine: 
+                    $$\begin{cases}
+                    2t^2 & \text{if } 0 \le t < 0.5 \\
+                    1 - 2(1-t)^2 & \text{if } 0.5 \le t \le 1
+                    \end{cases}$$
+                    </p>
+                </div>
+                <div class="iframe-container">
+                    <iframe src="esercizio_easing_selettore.html" frameborder="0"></iframe>
+                </div>
             </div>
         </section>
 
-        
-<section class="filetto" id="smoothstep">
+        <section class="filetto" id="smoothstep">
             <h4 class="titolo-sezione">Smoothstep</h4>
             <div class="contenuto-sezione">
-                 <p> 
-                Gli "smoothstep" (Ease-In-Out) sono funzioni matematiche utilizzate comunemente in grafica computerizzata, shader (es. GLSL), animazioni e interpolazioni per creare transizioni morbide tra due valori. È particolarmente utile per creare dissolvenze, interpolazioni di colore o attivazioni graduali di effetti.<br>
-                La versione più comune di smoothstep comprende tre argomenti: </p> 
-                <p>
-                smoothstep (edge0, edge1, x) </p>  
-                 <p>
-                In pratica la funzione smoothstep restituisce un valore che varia dolcemente da 0 a 1 quando x si sposta da edge0 a edge1. 
-                </p>
-                <p>
-                edge0 = il valore di inizio della transizione <br>
-                edge1 = il valore finale della transizione <br>  
-                x = il valore su cui si vuole interpolare </p>
-                <p></p>
-                <p>
-                Formula: </p>
-                <p>
-                 f(t) = t² (3 − 2t)
-                </p>
-                <p>
-                - Velocità e accelerazione iniziano e finiscono gradualmente. <br>
-                - Molto usato per transizioni fluide (dissolvenze o movimenti organici).
-                </p>
-                <p>
-                Una versione ancora più morbida del precedente è lo "smootherstep", dove anche la derivata seconda (accelerazione) inizia e finisce gradualmente, evitando qualsiasi scatto. <br> </p>
-                <p>
-                Formula:
-                </p>
-                <p>
-                f(t) = t³ (t (6t − 15) + 10)
-                </p>
-                <p>
-                - Perfetto per movimenti delicati, naturali, quasi impercettibili. <br>
-                - Usato per animazioni eleganti o quando serve un movimento continuo senza "spigoli".
-                </p>
+                 <div class="text-content">
+                    <p> 
+                    Gli "smoothstep" (Ease-In-Out) sono funzioni matematiche utilizzate comunemente in grafica computerizzata, shader (es. GLSL), animazioni e interpolazioni per creare transizioni morbide tra due valori. È particolarmente utile per creare dissolvenze, interpolazioni di colore o attivazioni graduali di effetti.<br>
+                    La versione più comune di smoothstep comprende tre argomenti: </p> 
+                    <p>
+                    $$\text{smoothstep}(\text{edge0}, \text{edge1}, x)$$ </p>  
+                     <p>
+                    In pratica la funzione smoothstep restituisce un valore che varia dolcemente da 0 a 1 quando x si sposta da edge0 a edge1. 
+                    </p>
+                    <p>
+                    edge0 = il valore di inizio della transizione <br>
+                    edge1 = il valore finale della transizione <br>  
+                    x = il valore su cui si vuole interpolare 
+                    </p>
+                    <p>
+                     $$f(t) = t^2 (3 - 2t)$$
+                    </p>
+                    <p>
+                    - Velocità e accelerazione iniziano e finiscono gradualmente. <br>
+                    - Molto usato per transizioni fluide (dissolvenze o movimenti organici).
+                    </p>
+                    <p>
+                    Una versione ancora più morbida del precedente è lo "smootherstep", dove anche la derivata seconda (accelerazione) inizia e finisce gradualmente, evitando qualsiasi scatto. <br> </p>
+                    <p>
+                    $$f(t) = t^3 (t (6t - 15) + 10)$$
+                    </p>
+                    <p>
+                    - Perfetto per movimenti delicati, naturali, quasi impercettibili. <br>
+                    - Usato per animazioni eleganti o quando serve un movimento continuo senza "spigoli".
+                    </p>
+                </div>
+                <div class="iframe-container">
+                    <iframe src="esercizio_smootherstep_singolo.html?easing=smoothstep" frameborder="0"></iframe>
+                    <iframe src="esercizio_smootherstep_singolo.html?easing=smootherstep" frameborder="0"></iframe>
+                </div>
             </div>
         </section>
 
-<section class="filetto" id="bibliografia">
-            <h4 class="titolo-sezione">Bibliografia</h4>
+        <section class="filetto" id="sitografia">
+            <h4 class="titolo-sezione">
+                Sitografia
+            </h4>
             <div class="contenuto-sezione">
                 <ul>
-                    <li>
-                        <a target="_blank" href="https://en.wikipedia.org/wiki/Trigonometric_functions">Wikipedia (en): Trigonometric functions</a>
-                    </li>
-                    <li>
-                        <a target="_blank" href="https://en.wikipedia.org/wiki/B%C3%A9zier_curve">Wikipedia (en): Bézier curve</a>
-                    </li>
-                    <li>
-                        <a target="_blank" href="https://easings.net/">Easings.net - Visual tool for easing functions</a>
-                    </li>
-                    <li>
-                        <a target="_blank" href="https://en.wikipedia.org/wiki/Linear_interpolation">Wikipedia (en): Linear interpolation</a>
-                    </li>
-                    <li>
-                        <a target="_blank" href="https://en.wikipedia.org/wiki/Smoothstep">Wikipedia (en): Smoothstep</a>
-                    </li>
-                    <li>Maecenas quis ante sit amet neque cursus hendrerit ac sit amet nisl</li>
-                    <li>In cursus aliquam odio eu eleifend</li>
-                    <li>Ut sed auctor magna</li>
-                    <li>In hac habitasse platea dictumst</li>
-                    <li>Aliquam aliquam nisl mi</li>
-                    <li>Phasellus et orci elit</li>
-                    <li>Maecenas vehicula elit et lacus accumsan consequat</li>
-                    <li>Nam consectetur lacus ante</li>
-                    <li>Vestibulum et massa dolor</li>
-                    <li>Aenean condimentum blandit eros non dapibus</li>
-                    <li>Maecenas quam nulla, porta eu nibh in, cursus iaculis mauris</li>
-                    <li>Phasellus sit amet nulla eu tellus dictum cursus</li>
-                    <li>Sed aliquet, ipsum sit amet tempus semper, augue velit consequat mi, et gravida sem purus a quam</li>
+                    <li><a target="_blank" href="https://easings.net/">easings.net</a></li>
+                    <li><a target="_blank" href="https://www.kirupa.com/">kirupa.com</a></li>
+                    <li><a target="_blank" href="https://reactnative.dev/docs/0.73/easing">reactnative.dev/docs/0.73/easing</a></li>
                 </ul>
-
             </div>
         </section>
     </main>
+
+    <footer>
+        <p>Progetto ideato e sviluppato da Coli Francesca e Riva Claudia, realizzato per l'esame del corso "matematica per il design" presso ISIA U anno 2025</p>
+    </footer>
 
     <script>
         // Script per gestire lo scorrimento fluido e il menu a schermo intero
