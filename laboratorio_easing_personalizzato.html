@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Easing Personalizzato</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      max-width: 1200px; /* Increased max-width to accommodate side-by-side layout */
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #000000; /* Black background */
+      color: #ffffff; /* White text */
+    }
+    h1 {
+      color: #ffffff; /* White heading */
+      text-align: center;
+      font-family: 'Lexend', sans-serif; /* Apply Lexend font */
+      margin-bottom: 50px; /* Increased line spacing below title */
+    }
+    .main-content-wrapper {
+        display: flex;
+        justify-content: center; /* Center the entire block */
+        gap: 40px; /* Space between left and right sections */
+        flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    }
+    .left-section {
+        flex: 1; /* Allows it to grow */
+        min-width: 300px; /* Minimum width for the instructions */
+        max-width: 400px; /* Max width for readability */
+    }
+    .right-section {
+        flex: 2; /* Allows it to grow more */
+        min-width: 700px; /* Minimum width for interactive elements */
+        display: flex; /* Flex container for its children */
+        flex-direction: column;
+        align-items: flex-end; /* Align elements within this section to the right */
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end; /* Align to the right within its section */
+      margin-top: 0; /* Remove top margin, handled by right-section */
+    }
+    .code-editor {
+      width: 100%;
+      margin-bottom: 20px;
+      display: none; /* Nascondi inizialmente */
+    }
+    .code-editor textarea {
+      width: 100%;
+      height: 100px;
+      padding: 10px;
+      font-family: monospace;
+      border-radius: 4px;
+      border: 1px solid #555; /* Darker border for text area */
+      background-color: #1a1a1a; /* Darker background for text area */
+      color: #ffffff; /* White text for text area */
+      resize: vertical;
+    }
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 0; /* Remove bottom margin here */
+      margin-top: 20px; /* Added margin-top for separation from graph */
+    }
+    button {
+      padding: 8px 12px;
+      border-radius: 4px;
+      border: none;
+      background-color: #ff5722; /* Orange button */
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #e64a19; /* Darker orange on hover */
+    }
+    .animation-area {
+      position: relative;
+      width: 700px; /* Increased width */
+      height: 200px; /* Increased height */
+      background-color: #111111; /* Dark background */
+      border: 1px solid #333333; /* Darker border */
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 20px; /* Added margin for separation */
+    }
+    .track {
+      position: absolute;
+      top: 50%;
+      left: 70px; /* Aligned with GRAPH_OFFSET_X from JS */
+      width: 600px; /* Matches GRAPH_WIDTH from JS */
+      height: 2px;
+      background-color: #666; /* Grey track */
+      transform: translateY(-50%);
+    }
+    .square {
+      position: absolute;
+      width: 40px; /* Increased square size */
+      height: 40px; /* Increased square size */
+      background-color: #ff5722;
+      top: 50%;
+      /* REMOVED fixed 'left' here, it will be controlled by JS for centering */
+      transform: translateY(-50%);
+      transform-origin: center;
+    }
+    .graph {
+      width: 700px; /* Increased width */
+      height: 300px; /* Increased height */
+      background-color: #111111; /* Dark background */
+      border: 1px solid #333333; /* Darker border */
+      border-radius: 8px;
+      margin-top: 0; /* Remove top margin, handled by right-section gap or elements within */
+      position: relative;
+    }
+    .graph-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    .graph-axis {
+      position: absolute;
+      background-color: #ffffff; /* White axis */
+    }
+    .graph-x {
+      width: 600px; /* Adjusted width */
+      height: 1px;
+      bottom: 60px; /* Adjusted position: shifted down */
+      left: 70px; /* Adjusted position */
+    }
+    .graph-y {
+      width: 1px;
+      height: 200px; /* Adjusted height */
+      bottom: 60px; /* Adjusted position: shifted down */
+      left: 70px; /* Adjusted position */
+    }
+    .graph-label {
+      position: absolute;
+      font-size: 14px; /* Increased font size */
+      color: #ffffff; /* White label */
+    }
+    .graph-label.x-axis-label { /* Specific class for X axis main label */
+        bottom: 35px; /* Adjusted position */
+        left: 350px; /* Adjusted position */
+    }
+    .graph-label.y-axis-label { /* Specific class for Y axis main label */
+        bottom: 150px; /* Adjusted position based on new origin */
+        left: 20px; /* Moved closer to the axis */
+        transform: rotate(-90deg);
+    }
+    .graph-curve {
+      stroke: #ff5722;
+      stroke-width: 2px;
+      fill: none;
+    }
+    .control-point {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background-color: #ff5722; /* Orange control points */
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      cursor: grab;
+      z-index: 10; /* Ensure points are clickable */
+    }
+    .error {
+      color: red;
+      margin-top: 5px;
+      font-size: 14px;
+    }
+    .legend {
+      /* Removed background, border, border-radius */
+      padding: 0; /* Removed padding for box effect */
+      margin-top: 0; /* Remove top margin */
+      text-align: left; /* Align text within legend */
+      color: #ffffff; /* White text */
+      font-family: 'Lexend', sans-serif; /* Lexend for instructions */
+      box-sizing: border-box; /* Include padding in width calculation */
+      height: fit-content; /* Adjust height to content */
+    }
+    .legend h3 {
+      margin-top: 0;
+      color: #ffffff; /* White heading */
+      font-family: 'Lexend', sans-serif; /* Lexend for heading */
+      font-weight: bold; /* Ensure title is bold */
+      margin-bottom: 15px; /* Spacing below title */
+    }
+    .legend ul {
+      padding-left: 20px;
+      margin-bottom: 0;
+      list-style-type: disc; /* Ensure bullet points */
+    }
+    .legend li {
+      margin-bottom: 8px;
+      font-weight: normal; /* Ensure regular font weight for list items */
+    }
+    /* Stile per l'indicatore del tempo */
+    .time-indicator {
+      position: absolute;
+      bottom: 35px; /* Adjusted to match new axis position */
+      left: 70px;
+      width: 600px; /* Matched with graph-x width */
+      height: 2px;
+      background-color: #666; /* Grey indicator line */
+    }
+    .time-tick {
+      position: absolute;
+      width: 8px;
+      height: 14px;
+      background-color: #ff5722; /* Orange tick */
+      left: 0;
+      top: -6px;
+      border-radius: 2px;
+    }
+    .back-button {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        color: #ffffff;
+        font-family: 'Lexend', sans-serif;
+        text-decoration: none;
+        font-size: 1rem;
+        transition: color 0.3s ease;
+    }
+    .back-button:hover {
+        color: #ff5722;
+    }
+
+    @media (max-width: 1024px) { /* Adjust breakpoint for layout change */
+        .main-content-wrapper {
+            flex-direction: column; /* Stack vertically on smaller screens */
+            align-items: center; /* Center stacked items */
+            gap: 20px; /* Reduce gap when stacked */
+        }
+        .left-section, .right-section {
+            width: 100%;
+            max-width: 700px; /* Max width for content readability */
+            min-width: unset; /* Remove min-width restriction */
+            align-items: center; /* Center content within sections */
+        }
+        .legend, .animation-area, .graph {
+            width: 100%; /* Full width on smaller screens */
+            box-sizing: border-box; /* Include padding in width */
+            padding: 15px; /* Adjust padding */
+        }
+        .track {
+            width: calc(100% - 140px); /* Adjust track width */
+            left: 70px;
+        }
+        .square {
+            left: 70px;
+        }
+        .graph-x {
+            width: calc(100% - 140px); /* Adjust x-axis width */
+            left: 70px;
+        }
+        .graph-label.x-axis-label {
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .graph-label.y-axis-label {
+            left: 10px; /* Adjusted left position for smaller screens */
+            bottom: 50%;
+            transform: translateY(50%) rotate(-90deg);
+        }
+        .time-indicator {
+            width: calc(100% - 140px);
+            left: 70px;
+        }
+    }
+    @media (max-width: 768px) {
+        body {
+            padding: 10px;
+        }
+        h1 {
+            font-size: 1.8rem;
+        }
+        .back-button {
+            font-size: 0.9rem;
+            top: 10px;
+            left: 10px;
+        }
+        .animation-area, .graph, .legend {
+            height: auto; /* Allow height to adjust */
+            padding: 10px;
+        }
+    }
+    @media (max-width: 480px) {
+        .graph-label {
+            font-size: 12px;
+        }
+    }
+  </style>
+</head>
+<body>
+  <a href="index.html" class="back-button">← Torna alla pagina principale</a>
+  <h1>Laboratorio di easing personalizzato</h1>
+  
+  <div class="main-content-wrapper">
+    <div class="left-section">
+        <div class="legend">
+            <h3>Come usare questo esercizio interattivo:</h3>
+            <ul>
+                <li>Clicca sul grafico per aggiungere un nuovo punto di controllo</li>
+                <li>Premi "Canc" (o "Backspace") sulla tastiera per eliminare l'ultimo punto aggiunto (non i punti agli estremi)</li>
+                <li>Usa il pulsante Resetta funzione per tornare alla curva LERP (lineare) predefinita</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="right-section">
+        <div class="animation-area">
+            <div class="track"></div>
+            <div class="square"></div>
+        </div>
+        
+        <div class="graph">
+            <div class="graph-container" id="graph-container">
+                <div class="graph-axis graph-x"></div>
+                <div class="graph-axis graph-y"></div>
+                <div class="graph-label" style="bottom: 60px; left: 70px;">0</div> <div class="graph-label" style="bottom: 60px; right: 17px;">1</div> <div class="graph-label" style="bottom: 60px; left: 50px;">0</div> <div class="graph-label" style="top: 40px; left: 50px;">1</div> <div class="graph-label x-axis-label">Tempo (t)</div>
+                <div class="graph-label y-axis-label">Posizione</div>
+                
+                <div class="time-indicator">
+                    <div class="time-tick"></div>
+                </div>
+                <svg id="bezier-curve-svg" width="700" height="300" style="position: absolute; top: 0; left: 0;"></svg>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button id="reset-btn">Resetta funzione</button>
+        </div>
+    </div>
+  </div>
+
+  <script>
+    const square = document.querySelector('.square');
+    const graphContainer = document.getElementById('graph-container');
+    const resetBtn = document.getElementById('reset-btn');
+    const timeTick = document.querySelector('.time-tick');
+    const bezierSvg = document.getElementById('bezier-curve-svg');
+    
+    let animationId = null;
+    let startTime = null;
+    const DURATION = 3000; // 3 seconds
+    
+    // Core constants for graph and animation alignment
+    const GRAPH_OFFSET_X = 70; // Left offset of the graph's drawable area and its origin
+    const GRAPH_OFFSET_Y = 60; // Bottom offset of the graph's drawable area and its origin
+    const GRAPH_WIDTH = 600; // Width of the graph's drawable area (X-axis range)
+    const GRAPH_HEIGHT = 200; // Height of the graph's drawable area (Y-axis range)
+
+    // For the square to start *at* the origin (0,0) of the graph, its 'left' CSS needs to be
+    // GRAPH_OFFSET_X - (square_width / 2) because its position is set from its top-left corner.
+    const SQUARE_WIDTH = 40; // Defined in CSS
+    const SQUARE_HALF_WIDTH = SQUARE_WIDTH / 2;
+
+    const ANIMATION_TRACK_X_START_PX = GRAPH_OFFSET_X; // The logical start of the track, aligns with graph origin
+    const ANIMATION_TRACK_X_END_PX = GRAPH_OFFSET_X + GRAPH_WIDTH; // The logical end of the track
+    const ANIMATION_TRACK_DISTANCE_PX = ANIMATION_TRACK_X_END_PX - ANIMATION_TRACK_X_START_PX; // Total travel distance
+
+    let controlPoints = [];
+
+    // Helper to convert normalized graph coordinates (0-1 range) to SVG pixel coordinates
+    function graphToSvgX(normalizedValue) {
+        return GRAPH_OFFSET_X + normalizedValue * GRAPH_WIDTH;
+    }
+    function graphToSvgY(normalizedValue) {
+        return (GRAPH_HEIGHT + GRAPH_OFFSET_Y) - (normalizedValue * GRAPH_HEIGHT);
+    }
+
+    // Evaluate the easing at a specific time using linear interpolation between control points
+    // This ensures the animation follows the path defined by the interpolated points.
+    function evaluateEasing(t) {
+        if (controlPoints.length < 2) return t; // Fallback to linear if not enough points
+        
+        // Sort points by x to ensure correct segment finding
+        const sortedPoints = [...controlPoints].sort((a, b) => a.x - b.x);
+        
+        // Handle edge cases outside the defined range [0, 1]
+        if (t <= sortedPoints[0].x) return sortedPoints[0].y;
+        if (t >= sortedPoints[sortedPoints.length - 1].x) return sortedPoints[sortedPoints.length - 1].y;
+
+        // Find the segment containing t
+        let i = 0;
+        while (i < sortedPoints.length - 1 && sortedPoints[i+1].x < t) {
+            i++;
+        }
+        
+        const p1 = sortedPoints[i];
+        const p2 = sortedPoints[i+1];
+        
+        if (p2.x === p1.x) return p1.y; // Avoid division by zero for vertical segments
+        
+        const segmentT = (t - p1.x) / (p2.x - p1.x);
+        return p1.y + segmentT * (p2.y - p1.y);
+    }
+    
+    // Draw the smooth curve on the SVG using a technique that approximates smoothness
+    // This creates cubic Bezier segments connecting the control points with calculated handles.
+    function drawBezierCurve() {
+        let path = bezierSvg.querySelector('.graph-curve');
+        if (!path) {
+            path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.classList.add('graph-curve');
+            bezierSvg.appendChild(path);
+        }
+
+        if (controlPoints.length < 2) {
+            path.setAttribute('d', '');
+            return;
+        }
+
+        const sortedPoints = [...controlPoints].sort((a, b) => a.x - b.x);
+        const svgPoints = sortedPoints.map(p => ({
+            x: graphToSvgX(p.x),
+            y: graphToSvgY(p.y)
+        }));
+
+        let d = `M ${svgPoints[0].x},${svgPoints[0].y}`;
+
+        if (svgPoints.length === 2) {
+            d += ` L ${svgPoints[1].x},${svgPoints[1].y}`; // Straight line for LERP
+        } else {
+            // Generate Bezier control points for a smooth curve passing through points
+            // This approach uses a simple heuristic for Catmull-Rom like smoothness.
+            for (let i = 0; i < svgPoints.length - 1; i++) {
+                const p0 = svgPoints[i > 0 ? i - 1 : 0]; // Previous point or start point
+                const p1 = svgPoints[i]; // Current point
+                const p2 = svgPoints[i + 1]; // Next point
+                const p3 = svgPoints[i + 2 < svgPoints.length ? i + 2 : svgPoints.length - 1]; // Next-next point or end point
+
+                // Calculate control points for cubic Bezier segment
+                const tension = 0.3; // Adjusted tension for a "gentler curve"
+
+                const cp1x = p1.x + tension * (p2.x - p0.x);
+                const cp1y = p1.y + tension * (p2.y - p0.y);
+                
+                const cp2x = p2.x - tension * (p3.x - p1.x);
+                const cp2y = p2.y - tension * (p3.y - p1.y);
+                
+                d += ` C ${cp1x},${cp1y}, ${cp2x},${cp2y}, ${p2.x},${p2.y}`;
+            }
+        }
+        
+        path.setAttribute('d', d);
+    }
+    
+    // Animation function
+    function animate(timestamp) {
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+      
+      const normalizedTime = (elapsed % DURATION) / DURATION;
+      
+      try {
+        const easedT = evaluateEasing(normalizedTime);
+        
+        // Calculate the square's position relative to the animation track's X-axis logical range
+        // Subtract half the square's width to center it at the logical X position
+        const x = ANIMATION_TRACK_X_START_PX + easedT * ANIMATION_TRACK_DISTANCE_PX - SQUARE_HALF_WIDTH;
+        square.style.left = `${x}px`;
+        
+        square.style.transform = `translateY(-50%)`;
+        
+        timeTick.style.left = `${normalizedTime * GRAPH_WIDTH}px`; 
+        
+      } catch (error) {
+        console.error("Animation error:", error);
+      }
+      
+      animationId = requestAnimationFrame(animate);
+    }
+
+    function startAnimation() {
+        if (animationId) {
+            cancelAnimationFrame(animationId);
+        }
+        startTime = null;
+        // Set initial square position for visual reset, centering it at the track's start
+        square.style.left = `${ANIMATION_TRACK_X_START_PX - SQUARE_HALF_WIDTH}px`;
+        animationId = requestAnimationFrame(animate);
+    }
+
+    // Create/update control point DOM elements
+    function createControlPointsElements() {
+      // Remove existing control points
+      document.querySelectorAll('.control-point').forEach(el => el.remove());
+      
+      controlPoints.forEach((point, index) => {
+        const controlPointDiv = document.createElement('div');
+        controlPointDiv.className = 'control-point';
+        controlPointDiv.dataset.index = index;
+        
+        // Position the control point
+        controlPointDiv.style.left = `${graphToSvgX(point.x)}px`;
+        controlPointDiv.style.top = `${graphToSvgY(point.y)}px`;
+        
+        // Add drag functionality only to intermediate points. Start/End points are fixed.
+        if (point.x === 0 && point.y === 0 || point.x === 1 && point.y === 1) {
+            controlPointDiv.style.cursor = 'default';
+        } else {
+            makeDraggable(controlPointDiv, index);
+        }
+        
+        graphContainer.appendChild(controlPointDiv);
+      });
+    }
+    
+    // Make a control point draggable
+    function makeDraggable(element, pointIndex) {
+      let isDragging = false;
+      
+      element.addEventListener('mousedown', startDrag);
+      
+      function startDrag(e) {
+        e.preventDefault();
+        e.stopPropagation(); // Prevent adding new point
+        isDragging = true;
+        
+        // Store initial mouse position and point position for relative drag
+        const startMouseX = e.clientX;
+        const startMouseY = e.clientY;
+        const initialPointX = controlPoints[pointIndex].x;
+        const initialPointY = controlPoints[pointIndex].y;
+        
+        element.style.cursor = 'grabbing';
+        
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('mouseup', stopDrag);
+      }
+      
+      function drag(e) {
+        if (!isDragging) return;
+        
+        const graphRect = graphContainer.getBoundingClientRect();
+        
+        // Calculate the change in mouse position relative to the start of the drag
+        const deltaX_pixels = e.clientX - startMouseX;
+        const deltaY_pixels = e.clientY - startMouseY;
+
+        // Convert pixel delta to normalized graph delta
+        const deltaNormalizedX = deltaX_pixels / GRAPH_WIDTH;
+        const deltaNormalizedY = -deltaY_pixels / GRAPH_HEIGHT; // Invert Y for graph
+
+        // Calculate new normalized coordinates
+        let newNormalizedX = initialPointX + deltaNormalizedX;
+        let newNormalizedY = initialPointY + deltaNormalizedY;
+        
+        // Clamp normalized coordinates to [0, 1] range
+        newNormalizedX = Math.max(0, Math.min(1, newNormalizedX));
+        newNormalizedY = Math.max(0, Math.min(1, newNormalizedY));
+        
+        // Update control point data
+        controlPoints[pointIndex].x = newNormalizedX;
+        controlPoints[pointIndex].y = newNormalizedY;
+
+        // Update element position (using clamped normalized values converted back to pixels)
+        element.style.left = `${graphToSvgX(newNormalizedX)}px`;
+        element.style.top = `${graphToSvgY(newNormalizedY)}px`;
+
+        drawBezierCurve();
+      }
+      
+      function stopDrag() {
+        isDragging = false;
+        element.style.cursor = 'grab';
+        document.removeEventListener('mousemove', drag);
+        document.removeEventListener('mouseup', stopDrag);
+        startAnimation(); // Restart animation after dragging
+      }
+    }
+    
+    // Add new control point on click
+    graphContainer.addEventListener('click', function(e) {
+      // Don't add a point if an existing control point was clicked
+      if (e.target.classList.contains('control-point')) return;
+      
+      const graphRect = graphContainer.getBoundingClientRect();
+      const clickX = e.clientX - graphRect.left;
+      const clickY = e.clientY - graphRect.top;
+      
+      // Convert pixel coordinates to normalized (0-1) graph coordinates
+      const normalizedX = (clickX - GRAPH_OFFSET_X) / GRAPH_WIDTH;
+      const normalizedY = ((GRAPH_HEIGHT + GRAPH_OFFSET_Y) - clickY) / GRAPH_HEIGHT;
+      
+      // Only add if within the active graph area (0-1 normalized range)
+      if (normalizedX >= 0 && normalizedX <= 1 && normalizedY >= 0 && normalizedY <= 1) {
+        // Ensure new point is not an exact duplicate of existing points.
+        const isDuplicate = controlPoints.some(p => p.x === normalizedX && p.y === normalizedY);
+        if (isDuplicate) return;
+
+        // Insert new point, maintaining order and ensuring fixed endpoints are not duplicated as dynamic points
+        let insertIndex = controlPoints.findIndex(p => p.x > normalizedX);
+        if (insertIndex === -1) { // If x is greater than all existing x, insert before the last element (which is (1,1))
+             insertIndex = controlPoints.length - (controlPoints[controlPoints.length-1].x === 1 && controlPoints[controlPoints.length-1].y === 1 ? 1 : 0);
+        } else if (insertIndex === 0 && controlPoints[0].x === 0 && controlPoints[0].y === 0) { // If inserting before (0,0), insert after it
+             insertIndex = 1;
+        }
+
+        controlPoints.splice(insertIndex, 0, { x: normalizedX, y: normalizedY });
+        
+        controlPoints.sort((a, b) => a.x - b.x); // Always sort to ensure correct drawing order
+
+        createControlPointsElements();
+        drawBezierCurve();
+        startAnimation();
+      }
+    });
+
+    // Handle "Delete" key press to remove the last added point
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Delete' || e.key === 'Backspace') {
+        // Filter out the fixed (0,0) and (1,1) points
+        const removablePoints = controlPoints.filter(p => !(p.x === 0 && p.y === 0) && !(p.x === 1 && p.y === 1));
+        
+        if (removablePoints.length > 0) {
+          // Find the last of these removable points (by current order in array, not necessarily x-order)
+          const lastRemovablePoint = removablePoints[removablePoints.length - 1];
+          const indexToRemove = controlPoints.indexOf(lastRemovablePoint);
+          if (indexToRemove > -1) {
+            controlPoints.splice(indexToRemove, 1);
+            
+            // Ensure (0,0) and (1,1) are always present if they were there initially
+            const hasStart = controlPoints.some(p => p.x === 0 && p.y === 0);
+            const hasEnd = controlPoints.some(p => p.x === 1 && p.y === 1);
+            if (!hasStart) controlPoints.unshift({x: 0, y: 0});
+            if (!hasEnd) controlPoints.push({x: 1, y: 1});
+
+            // If only two points remain, ensure they are exactly (0,0) and (1,1)
+            if (controlPoints.length === 2 && (!(controlPoints[0].x === 0 && controlPoints[0].y === 0) || !(controlPoints[1].x === 1 && controlPoints[1].y === 1))) {
+                controlPoints = [{ x: 0, y: 0 }, { x: 1, y: 1 }];
+            }
+
+            controlPoints.sort((a, b) => a.x - b.x); // Re-sort after removal
+
+            createControlPointsElements();
+            drawBezierCurve();
+            startAnimation();
+          }
+        }
+      }
+    });
+    
+    // Reset function to LERP
+    function resetToLerp() {
+      controlPoints = [
+        { x: 0, y: 0.1 },
+        { x: 1, y: 1 }
+      ];
+      createControlPointsElements();
+      drawBezierCurve();
+      startAnimation();
+    }
+
+    // Reset button listener
+    resetBtn.addEventListener('click', resetToLerp);
+    
+    // Initial setup: start with LERP
+    resetToLerp();
+  </script>
+</body>
+</html>
