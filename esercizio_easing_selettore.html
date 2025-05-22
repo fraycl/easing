@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Animazione Easing Selettore</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      max-width: 100%;
+      margin: 0;
+      padding: 0;
+      background-color: #000000;
+      color: #ffffff;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    h1 {
+      display: none;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 0;
+      width: 100%;
+      max-width: 700px;
+    }
+    select {
+      padding: 8px 12px;
+      border-radius: 4px;
+      border: 1px solid #555;
+      font-size: 16px;
+      background-color: #1a1a1a;
+      color: #ffffff;
+      outline: none;
+    }
+    .animation-area {
+      position: relative;
+      width: calc(100% - 40px);
+      height: 150px;
+      background-color: #111111;
+      border: 1px solid #333333;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+    .track {
+      position: absolute;
+      top: 50%;
+      left: 20px;
+      width: calc(100% - 40px);
+      height: 2px;
+      background-color: #666;
+      transform: translateY(-50%);
+    }
+    .square {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      background-color: #ff5722;
+      top: 50%;
+      left: 20px;
+      transform: translateY(-50%);
+      transform-origin: center;
+    }
+    .graph {
+      width: calc(100% - 40px);
+      height: 200px;
+      background-color: #111111;
+      border: 1px solid #333333;
+      border-radius: 8px;
+      margin-top: 10px;
+      position: relative;
+    }
+    .graph-axis {
+      position: absolute;
+      background-color: #ffffff;
+    }
+    .graph-x {
+      width: calc(100% - 40px);
+      height: 1px;
+      bottom: 30px;
+      left: 20px;
+    }
+    .graph-y {
+      width: 1px;
+      height: calc(100% - 40px);
+      bottom: 20px;
+      left: 20px;
+    }
+    .graph-label {
+      position: absolute;
+      font-size: 12px;
+      color: #ffffff;
+    }
+    .graph-label.x-axis:first-of-type {
+      bottom: 10px;
+      left: 20px;
+    }
+    .graph-label.x-axis:last-of-type {
+      bottom: 10px;
+      right: 20px;
+      left: auto;
+    }
+    .graph-label.y-axis:first-of-type {
+      left: 5px;
+      bottom: 20px;
+    }
+    .graph-label.y-axis:last-of-type {
+      left: 5px;
+      top: 10px;
+      bottom: auto;
+    }
+    .graph-label.time-label {
+      bottom: -5px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .graph-label.position-label {
+      bottom: 50%;
+      left: -10px;
+      transform: translateY(50%) rotate(-90deg);
+      transform-origin: center;
+    }
+    .graph-curve {
+      position: absolute;
+      stroke: #ff5722;
+      stroke-width: 2px;
+      fill: none;
+    }
+    .formula {
+      display: none;
+    }
+
+    /* Stili per il menu a tendina del gruppo */
+    .group-controls {
+      /* Ora questo div è sempre visibile in questo file, non ha più bisogno del display none iniziale */
+      text-align: center;
+      margin-top: 10px;
+      margin-bottom: 20px;
+      width: 100%;
+      max-width: 700px;
+    }
+    .group-controls select {
+      padding: 8px 12px;
+      border-radius: 4px;
+      border: 1px solid #555;
+      font-size: 16px;
+      background-color: #1a1a1a;
+      color: #ffffff;
+      outline: none;
+    }
+
+    /* Media Queries per la responsività all'interno dell'iframe */
+    @media (max-width: 768px) {
+        .container, .group-controls {
+            max-width: 100%;
+            padding: 0 10px;
+            box-sizing: border-box;
+        }
+        .animation-area, .graph {
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .track, .square, .graph-x {
+            left: 10px;
+            width: calc(100% - 20px);
+        }
+        .square {
+            width: 25px;
+            height: 25px;
+        }
+        .graph-label {
+            font-size: 10px;
+        }
+        .graph-x {
+            bottom: 20px;
+        }
+        .graph-y {
+            left: 10px;
+            bottom: 10px;
+            height: calc(100% - 20px);
+        }
+        .graph-label.x-axis:first-of-type { left: 10px; }
+        .graph-label.x-axis:last-of-type { right: 10px; }
+        .graph-label.y-axis:first-of-type { bottom: 10px; left: 0; }
+        .graph-label.y-axis:last-of-type { top: 5px; left: 0; }
+        .graph-label.time-label { bottom: -10px; }
+        .graph-label.position-label { left: -15px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="animation-area">
+      <div class="track"></div>
+      <div class="square"></div>
+    </div>
+    
+    <div class="graph">
+      <div class="graph-axis graph-x"></div>
+      <div class="graph-axis graph-y"></div>
+      <div class="graph-label x-axis">0</div> <div class="graph-label x-axis">1</div> <div class="graph-label y-axis">0</div> <div class="graph-label y-axis">1</div> <div class="graph-label time-label">Tempo (t)</div>
+      <div class="graph-label position-label">Posizione</div>
+    </div>
+  </div>
+
+  <div class="group-controls">
+    <select id="group-easing-select">
+      <option value="ease-in">Ease-In</option>
+      <option value="ease-out">Ease-Out</option>
+      <option value="ease-in-out">Ease-In-Out</option>
+    </select>
+  </div>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script>
+    // Funzione per ottenere i parametri URL
+    function getUrlParameter(name) {
+        name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+        var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+        var results = regex.exec(location.search);
+        return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+    }
+
+    // Le modifiche all'inizializzazione del currentEasingType non sono più necessarie qui
+    // dato che questo file è SEMPRE per il selettore.
+    let currentEasingType = 'ease-in'; // Inizializza con il primo valore del select
+
+    // Riferimenti agli elementi principali dell'animazione
+    const square = document.querySelector('.square');
+    const graph = document.querySelector('.graph');
+    const groupEasingSelect = document.getElementById('group-easing-select');
+
+    let animationId = null;
+    let startTime = null;
+    const DURATION = 3000; // 3 seconds
+    
+    // Variabili globali per le dimensioni, verranno popolate in calculateDimensions
+    let START_X_GLOBAL; 
+    let END_X_GLOBAL;
+    let DISTANCE_GLOBAL;
+    let GRAPH_OFFSET_X_GLOBAL;
+    let GRAPH_OFFSET_Y_GLOBAL;
+    let GRAPH_WIDTH_GLOBAL;
+    let GRAPH_HEIGHT_GLOBAL;
+
+    function calculateDimensions() {
+        const animationArea = document.querySelector('.animation-area');
+        if (!graph || !animationArea || graph.offsetWidth === 0 || graph.offsetHeight === 0 || animationArea.offsetWidth === 0) {
+            return false;
+        }
+
+        START_X_GLOBAL = 20; 
+        END_X_GLOBAL = animationArea.offsetWidth - 20;
+        DISTANCE_GLOBAL = END_X_GLOBAL - START_X_GLOBAL;
+        
+        GRAPH_OFFSET_X_GLOBAL = 20; 
+        GRAPH_OFFSET_Y_GLOBAL = 20; 
+        GRAPH_WIDTH_GLOBAL = graph.offsetWidth - 40; 
+        GRAPH_HEIGHT_GLOBAL = graph.offsetHeight - 40; 
+        return true;
+    }
+
+    // Draw easing curve on graph
+    function drawCurve(easingType) { 
+      const existingCurve = document.querySelector('.graph-curve');
+      if (existingCurve) {
+        existingCurve.remove();
+      }
+      
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('width', graph.offsetWidth);
+      svg.setAttribute('height', graph.offsetHeight);
+      svg.style.position = 'absolute';
+      svg.style.top = '0';
+      svg.style.left = '0';
+      
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.classList.add('graph-curve');
+      
+      let d = `M ${GRAPH_OFFSET_X_GLOBAL},${GRAPH_HEIGHT_GLOBAL + GRAPH_OFFSET_Y_GLOBAL} `;  
+      
+      for (let i = 0; i <= 100; i++) {
+        const t = i / 100;
+        let y;
+        
+        switch (easingType) {
+          case 'linear':
+            y = t;
+            break;
+          case 'ease-in':
+            y = t * t;
+            break;
+          case 'ease-out':
+            y = 1 - (1 - t) * (1 - t);
+            break;
+          case 'ease-in-out':
+            y = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+            break;
+          case 'smootherstep': // Questo caso non dovrebbe essere chiamato qui, ma per sicurezza
+            y = t * t * t * (t * (t * 6 - 15) + 10);
+            break;
+        }
+        
+        const x = GRAPH_OFFSET_X_GLOBAL + t * GRAPH_WIDTH_GLOBAL;
+        const graphY = (GRAPH_HEIGHT_GLOBAL + GRAPH_OFFSET_Y_GLOBAL) - y * GRAPH_HEIGHT_GLOBAL;
+        d += `L ${x},${graphY} `;
+      }
+      
+      path.setAttribute('d', d);
+      svg.appendChild(path);
+      graph.appendChild(svg);
+    }
+    
+    // Easing functions
+    const easingFunctions = {
+      'linear': t => t,
+      'ease-in': t => t * t,
+      'ease-out': t => 1 - (1 - t) * (1 - t),
+      'ease-in-out': t => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2,
+      'smootherstep': t => t * t * t * (t * (t * 6 - 15) + 10)
+    };
+    
+    // Animation function
+    function animate(timestamp) {
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+      
+      let t = (elapsed % DURATION) / DURATION;
+      
+      if (t >= 1) {
+        t = 1; 
+        startTime = timestamp; 
+      }
+      
+      // Usa sempre il valore selezionato nel menu a tendina
+      const easedT = easingFunctions[groupEasingSelect.value](t); 
+      
+      const x = START_X_GLOBAL + easedT * DISTANCE_GLOBAL; 
+      square.style.left = `${x}px`;
+      
+      square.style.transform = `translateY(-50%)`;
+      
+      animationId = requestAnimationFrame(animate);
+    }
+    
+    // Setup iniziale (spostato qui sotto per avere tutti gli elementi DOM pronti)
+    window.addEventListener('load', () => {
+        // Imposta l'easing iniziale basandosi sul valore predefinito del select
+        currentEasingType = groupEasingSelect.value; 
+
+        const tryInitialSetup = () => {
+            if (calculateDimensions()) {
+                drawCurve(currentEasingType);
+                if (!animationId) {
+                    animationId = requestAnimationFrame(animate);
+                }
+            } else {
+                requestAnimationFrame(tryInitialSetup);
+            }
+        };
+        tryInitialSetup();
+    });
+
+    // Aggiungi l'event listener per il select del gruppo
+    if (groupEasingSelect) {
+        groupEasingSelect.addEventListener('change', () => {
+            const selectedEasing = groupEasingSelect.value;
+            drawCurve(selectedEasing);
+            
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+            }
+            startTime = null; 
+            animationId = requestAnimationFrame(animate);
+        });
+    }
+
+    // AGGIORNAMENTO PER IFRame: Assicurati che l'animazione e il grafico si ridimensionino correttamente
+    window.addEventListener('resize', () => {
+        calculateDimensions();
+        drawCurve(groupEasingSelect.value); // Ridisegna la curva con l'easing corrente
+    });
+  </script>
+</body>
+</html>
