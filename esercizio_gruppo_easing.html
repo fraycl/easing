@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Animazione Easing</title> <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      max-width: 100%; /* Adattato per l'iframe */
+      margin: 0; /* Adattato per l'iframe */
+      padding: 0; /* Adattato per l'iframe */
+      background-color: #000000; /* Black background */
+      color: #ffffff; /* White text */
+      overflow: hidden; /* Evita scrollbar interne agli iframe */
+      display: flex; /* Flexbox per impilare verticalmente gli elementi */
+      flex-direction: column;
+      justify-content: center; /* Centra verticalmente il contenuto */
+      align-items: center; /* Centra orizzontalmente il contenuto */
+      height: 100vh; /* Fa sì che il body occupi l'intera altezza della viewport dell'iframe */
+    }
+    h1 {
+      display: none; /* Nasconde il titolo H1, non serve in un iframe */
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 0; /* Rimosso margine superiore */
+      width: 100%; /* Per adattarsi al flexbox del body */
+      max-width: 700px; /* Mantieni la larghezza originale del container */
+    }
+    /* .controls e .back-button verranno rimossi dall'HTML, non servono stili specifici */
+    select {
+      padding: 8px 12px;
+      border-radius: 4px;
+      border: 1px solid #555; /* Darker border */
+      font-size: 16px;
+      background-color: #1a1a1a; /* Dark background */
+      color: #ffffff; /* White text */
+    }
+    button { /* Questo stile non sarà più usato per il button, ma lo lascio per completezza */
+      padding: 8px 12px;
+      border-radius: 4px;
+      border: none;
+      background-color: #ff5722; /* Orange button */
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover { /* Questo stile non sarà più usato per il button, ma lo lascio per completezza */
+      background-color: #e64a19; /* Darker orange on hover */
+    }
+    .animation-area {
+      position: relative;
+      width: calc(100% - 40px); /* Usa 100% del container meno padding */
+      height: 150px; /* Altezza fissa */
+      background-color: #111111; /* Dark background */
+      border: 1px solid #333333; /* Darker border */
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+    .track {
+      position: absolute;
+      top: 50%;
+      left: 20px; /* Margine sinistro ridotto */
+      width: calc(100% - 40px); /* Larghezza del tracciato, considerando i margini */
+      height: 2px;
+      background-color: #666; /* White track */
+      transform: translateY(-50%);
+    }
+    .square {
+      position: absolute;
+      width: 30px; /* Dimensione del quadrato ridotta */
+      height: 30px; /* Dimensione del quadrato ridotta */
+      background-color: #ff5722;
+      top: 50%;
+      left: 20px; /* Posizione iniziale del quadrato */
+      transform: translateY(-50%);
+      transform-origin: center;
+    }
+    .graph {
+      width: calc(100% - 40px); /* Usa 100% del container meno padding */
+      height: 200px; /* Altezza fissa */
+      background-color: #111111; /* Dark background */
+      border: 1px solid #333333; /* Darker border */
+      border-radius: 8px;
+      margin-top: 10px;
+      position: relative;
+    }
+    .graph-axis {
+      position: absolute;
+      background-color: #ffffff; /* White axis */
+    }
+    .graph-x {
+      width: calc(100% - 40px); /* Larghezza asse x, considerando i margini */
+      height: 1px;
+      bottom: 30px; /* Posizione asse x più in basso */
+      left: 20px; /* Posizione asse x a sinistra */
+    }
+    .graph-y {
+      width: 1px;
+      height: calc(100% - 40px); /* Altezza asse y, considerando i margini */
+      bottom: 20px; /* Posizione asse y più in basso */
+      left: 20px; /* Posizione asse y a sinistra */
+    }
+    .graph-label {
+      position: absolute;
+      font-size: 12px; /* Font size ridotto per le etichette */
+      color: #ffffff; /* White label */
+    }
+    .graph-label.x-axis:first-of-type {
+      bottom: 10px; /* Posizione etichetta x */
+      left: 20px; /* Etichetta 0 */
+    }
+    .graph-label.x-axis:last-of-type {
+      bottom: 10px; /* Posizione etichetta x */
+      right: 20px; /* Etichetta 1 */
+      left: auto; /* Annulla left per non sovrapporsi */
+    }
+    .graph-label.y-axis:first-of-type {
+      left: 5px; /* Posizione etichetta y */
+      bottom: 20px; /* Etichetta 0 */
+    }
+    .graph-label.y-axis:last-of-type {
+      left: 5px; /* Posizione etichetta y */
+      top: 10px; /* Etichetta 1 */
+      bottom: auto; /* Annulla bottom per non sovrapporsi */
+    }
+    .graph-label.time-label {
+      bottom: -5px; /* Posizione etichetta Tempo */
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .graph-label.position-label {
+      bottom: 50%;
+      left: -10px; /* Spostato più a sinistra */
+      transform: translateY(50%) rotate(-90deg);
+      transform-origin: center;
+    }
+    .graph-curve {
+      position: absolute;
+      stroke: #ff5722;
+      stroke-width: 2px;
+      fill: none;
+    }
+    .formula {
+      display: none; /* Nascondiamo completamente la formula */
+    }
+
+    /* Stili per il menu a tendina del gruppo */
+    .group-controls {
+      display: none; /* Inizialmente nascosto, mostrato solo se ?easing=group */
+      text-align: center;
+      margin-top: 10px;
+      margin-bottom: 20px; /* Spazio tra il select e l'area animazione */
+      width: 100%; /* Prende la larghezza del container */
+      max-width: 700px; /* Allineato al container */
+    }
+    .group-controls select {
+      padding: 8px 12px;
+      border-radius: 4px;
+      border: 1px solid #555;
+      font-size: 16px;
+      background-color: #1a1a1a;
+      color: #ffffff;
+      outline: none; /* Rimuove il bordo blu al focus */
+    }
+
+    /* Media Queries per la responsività all'interno dell'iframe */
+    @media (max-width: 768px) {
+        .container, .group-controls {
+            max-width: 100%; /* Full width on smaller screens */
+            padding: 0 10px; /* Aggiungi un piccolo padding orizzontale */
+            box-sizing: border-box; /* Includi padding nella larghezza */
+        }
+        .animation-area, .graph {
+            width: 100%; /* Larghezza piena del container */
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .track, .square, .graph-x {
+            left: 10px; /* Margini più piccoli */
+            width: calc(100% - 20px);
+        }
+        .square {
+            width: 25px; /* Quadrato più piccolo */
+            height: 25px;
+        }
+        .graph-label {
+            font-size: 10px; /* Font size ancora più ridotto */
+        }
+        .graph-x {
+            bottom: 20px;
+        }
+        .graph-y {
+            left: 10px;
+            bottom: 10px;
+            height: calc(100% - 20px);
+        }
+        .graph-label.x-axis:first-of-type { left: 10px; }
+        .graph-label.x-axis:last-of-type { right: 10px; }
+        .graph-label.y-axis:first-of-type { bottom: 10px; left: 0; }
+        .graph-label.y-axis:last-of-type { top: 5px; left: 0; }
+        .graph-label.time-label { bottom: -10px; }
+        .graph-label.position-label { left: -15px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="animation-area">
+      <div class="track"></div>
+      <div class="square"></div>
+    </div>
+    
+    <div class="graph">
+      <div class="graph-axis graph-x"></div>
+      <div class="graph-axis graph-y"></div>
+      <div class="graph-label x-axis">0</div> <div class="graph-label x-axis">1</div> <div class="graph-label y-axis">0</div> <div class="graph-label y-axis">1</div> <div class="graph-label time-label">Tempo (t)</div>
+      <div class="graph-label position-label">Posizione</div>
+    </div>
+  </div>
+
+  <div class="group-controls">
+    <select id="group-easing-select">
+      <option value="ease-in">Ease-In</option>
+      <option value="ease-out">Ease-Out</option>
+      <option value="ease-in-out">Ease-In-Out</option>
+    </select>
+  </div>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script>
+    // Funzione per ottenere i parametri URL
+    function getUrlParameter(name) {
+        name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+        var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+        var results = regex.exec(location.search);
+        return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+    }
+
+    const requestedEasing = getUrlParameter('easing');
+    let currentEasingType = 'linear'; // Default easing se non specificato
+
+    // Rimuovi o imposta display none per elementi non desiderati (anche se dovrebbero essere rimossi dall'HTML)
+    // Questi elementi non dovrebbero esistere in questo template pulito, ma la logica è di sicurezza
+    const controlsDiv = document.querySelector('.controls'); 
+    if (controlsDiv) {
+        controlsDiv.style.display = 'none';
+    }
+    const backButton = document.querySelector('.back-button'); 
+    if (backButton) {
+        backButton.style.display = 'none';
+    }
+    const oldFormulaDisplay = document.getElementById('formula');
+    if (oldFormulaDisplay) {
+        oldFormulaDisplay.style.display = 'none'; // Nasconde anche se per errore fosse ancora nell'HTML
+    }
+    const oldH1 = document.querySelector('h1');
+    if (oldH1) {
+        oldH1.style.display = 'none'; // Nasconde il vecchio H1 se per errore fosse ancora nell'HTML
+    }
+
+
+    const groupEasingSelect = document.getElementById('group-easing-select');
+    let isGroupAnimation = false; // Flag per capire se è l'animazione di gruppo
+
+    if (requestedEasing === 'group') { // Se il parametro è 'group', mostriamo il select del gruppo
+        isGroupAnimation = true;
+        if (groupEasingSelect) {
+            groupEasingSelect.style.display = 'block'; // Mostra il select
+            currentEasingType = groupEasingSelect.value; // Imposta l'easing iniziale dal select del gruppo
+        }
+    } else if (requestedEasing) { // Se è un easing singolo (linear, smootherstep)
+        currentEasingType = requestedEasing;
+        if (groupEasingSelect) {
+            groupEasingSelect.style.display = 'none'; // Nasconde il select se non è un gruppo
+        }
+    } else { // Nessun parametro, default per linear e nasconde il select del gruppo
+        currentEasingType = 'linear';
+        if (groupEasingSelect) {
+            groupEasingSelect.style.display = 'none';
+        }
+    }
+
+    // Riferimenti agli elementi principali dell'animazione
+    const square = document.querySelector('.square');
+    const graph = document.querySelector('.graph');
+    
+    let animationId = null;
+    let startTime = null;
+    const DURATION = 3000; // 3 seconds
+    
+    // Variabili globali per le dimensioni, verranno popolate in calculateDimensions
+    let START_X_GLOBAL; 
+    let END_X_GLOBAL;
+    let DISTANCE_GLOBAL;
+    let GRAPH_OFFSET_X_GLOBAL;
+    let GRAPH_OFFSET_Y_GLOBAL;
+    let GRAPH_WIDTH_GLOBAL;
+    let GRAPH_HEIGHT_GLOBAL;
+
+    function calculateDimensions() {
+        // Aggiunto un controllo più robusto per graph e animationArea
+        const animationArea = document.querySelector('.animation-area');
+        if (!graph || !animationArea || graph.offsetWidth === 0 || graph.offsetHeight === 0 || animationArea.offsetWidth === 0) {
+            return false; // Indica che le dimensioni non sono ancora valide
+        }
+
+        // Le posizioni e distanze del quadrato sono relative all'animation-area
+        START_X_GLOBAL = 20; 
+        END_X_GLOBAL = animationArea.offsetWidth - 20; // Fine del tracciato basato sulla larghezza dell'area animazione
+        DISTANCE_GLOBAL = END_X_GLOBAL - START_X_GLOBAL;
+        
+        // Le dimensioni del grafico sono relative al grafico stesso
+        GRAPH_OFFSET_X_GLOBAL = 20; 
+        GRAPH_OFFSET_Y_GLOBAL = 20; 
+        GRAPH_WIDTH_GLOBAL = graph.offsetWidth - 40; 
+        GRAPH_HEIGHT_GLOBAL = graph.offsetHeight - 40; 
+        return true; // Indica che le dimensioni sono state calcolate
+    }
+
+    // Draw easing curve on graph
+    function drawCurve(easingType) { 
+      const existingCurve = document.querySelector('.graph-curve');
+      if (existingCurve) {
+        existingCurve.remove();
+      }
+      
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('width', graph.offsetWidth); // Usa le dimensioni attuali del grafico
+      svg.setAttribute('height', graph.offsetHeight);
+      svg.style.position = 'absolute';
+      svg.style.top = '0';
+      svg.style.left = '0';
+      
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.classList.add('graph-curve');
+      
+      let d = `M ${GRAPH_OFFSET_X_GLOBAL},${GRAPH_HEIGHT_GLOBAL + GRAPH_OFFSET_Y_GLOBAL} `;  
+      
+      for (let i = 0; i <= 100; i++) {
+        const t = i / 100;
+        let y;
+        
+        switch (easingType) {
+          case 'linear':
+            y = t;
+            break;
+          case 'ease-in':
+            y = t * t;
+            break;
+          case 'ease-out':
+            y = 1 - (1 - t) * (1 - t);
+            break;
+          case 'ease-in-out':
+            y = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+            break;
+          case 'smootherstep':
+            y = t * t * t * (t * (t * 6 - 15) + 10);
+            break;
+        }
+        
+        const x = GRAPH_OFFSET_X_GLOBAL + t * GRAPH_WIDTH_GLOBAL;
+        const graphY = (GRAPH_HEIGHT_GLOBAL + GRAPH_OFFSET_Y_GLOBAL) - y * GRAPH_HEIGHT_GLOBAL;
+        d += `L ${x},${graphY} `;
+      }
+      
+      path.setAttribute('d', d);
+      svg.appendChild(path);
+      graph.appendChild(svg);
+    }
+    
+    // Update formula display (completamente rimosso innerHTML)
+    function updateFormula(easingType) { 
+      if (window.MathJax) {
+        // Nessun innerHTML, solo typeset se ci sono formule in MathJax direttamente nel grafico
+        // MathJax.typesetPromise([graph]).catch((err) => console.log('MathJax typesetting error:', err));
+      }
+    }
+    
+    // Easing functions
+    const easingFunctions = {
+      'linear': t => t,
+      'ease-in': t => t * t,
+      'ease-out': t => 1 - (1 - t) * (1 - t),
+      'ease-in-out': t => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2, // Corretto per Ease-In-Out
+      'smootherstep': t => t * t * t * (t * (t * 6 - 15) + 10)
+    };
+    
+    // Animation function
+    function animate(timestamp) {
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+      
+      let t = (elapsed % DURATION) / DURATION;
+      
+      if (t >= 1) {
+        t = 1; 
+        startTime = timestamp; 
+      }
+      
+      const easedT = easingFunctions[isGroupAnimation ? groupEasingSelect.value : currentEasingType](t); 
+      
+      const x = START_X_GLOBAL + easedT * DISTANCE_GLOBAL; 
+      square.style.left = `${x}px`;
+      
+      square.style.transform = `translateY(-50%)`;
+      
+      animationId = requestAnimationFrame(animate);
+    }
+    
+    // Setup iniziale (spostato qui sotto per avere tutti gli elementi DOM pronti)
+    window.addEventListener('load', () => {
+        const tryInitialSetup = () => {
+            if (calculateDimensions()) { // Ora calculateDimensions restituisce true se le dimensioni sono valide
+                drawCurve(isGroupAnimation ? groupEasingSelect.value : currentEasingType);
+                updateFormula(isGroupAnimation ? groupEasingSelect.value : currentEasingType);
+                if (!animationId) {
+                    animationId = requestAnimationFrame(animate);
+                }
+            } else {
+                requestAnimationFrame(tryInitialSetup); // Riprova se le dimensioni non sono ancora valide
+            }
+        };
+        tryInitialSetup(); // Inizia il processo di setup
+    });
+
+    // Aggiungi l'event listener per il select del gruppo
+    if (groupEasingSelect) {
+        groupEasingSelect.addEventListener('change', () => {
+            const selectedEasing = groupEasingSelect.value;
+            drawCurve(selectedEasing);
+            updateFormula(selectedEasing);
+            
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+            }
+            startTime = null; 
+            animationId = requestAnimationFrame(animate);
+        });
+    }
+
+    // AGGIORNAMENTO PER IFRame: Assicurati che l'animazione e il grafico si ridimensionino correttamente
+    window.addEventListener('resize', () => {
+        calculateDimensions(); // Ricalcola tutte le dimensioni
+        drawCurve(isGroupAnimation ? groupEasingSelect.value : currentEasingType); // Ridisegna la curva
+    });
+  </script>
+</body>
+</html>
