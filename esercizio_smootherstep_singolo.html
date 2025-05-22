@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smoothstep / Smootherstep Animazione</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      max-width: 100%;
+      margin: 0;
+      padding: 0;
+      background-color: #000000;
+      color: #ffffff;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh; /* Fa sì che il body occupi l'intera altezza della viewport dell'iframe */
+    }
+    h1 {
+      display: none; /* Nasconde il titolo H1, non serve in un iframe */
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 0; /* Rimosso margine superiore */
+      width: 100%; /* Per adattarsi al flexbox del body */
+      max-width: 700px; /* Mantieni la larghezza originale del container */
+    }
+    .animation-area {
+      position: relative;
+      width: calc(100% - 40px); /* Usa 100% del container meno padding */
+      height: 150px; /* Altezza fissa */
+      background-color: #111111; /* Dark background */
+      border: 1px solid #333333; /* Darker border */
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+    .track {
+      position: absolute;
+      top: 50%;
+      left: 20px; /* Margine sinistro ridotto */
+      width: calc(100% - 40px); /* Larghezza del tracciato, considerando i margini */
+      height: 2px;
+      background-color: #666; /* White track */
+      transform: translateY(-50%);
+    }
+    .square {
+      position: absolute;
+      width: 30px; /* Dimensione del quadrato ridotta */
+      height: 30px; /* Dimensione del quadrato ridotta */
+      background-color: #ff5722;
+      top: 50%;
+      left: 20px; /* Posizione iniziale del quadrato */
+      transform: translateY(-50%);
+      transform-origin: center;
+    }
+    .graph {
+      width: calc(100% - 40px); /* Usa 100% del container meno padding */
+      height: 200px; /* Altezza fissa */
+      background-color: #111111; /* Dark background */
+      border: 1px solid #333333; /* Darker border */
+      border-radius: 8px;
+      margin-top: 10px;
+      position: relative;
+    }
+    .graph-axis {
+      position: absolute;
+      background-color: #ffffff; /* White axis */
+    }
+    .graph-x {
+      width: calc(100% - 40px); /* Larghezza asse x, considerando i margini */
+      height: 1px;
+      bottom: 30px; /* Posizione asse x più in basso */
+      left: 20px; /* Posizione asse x a sinistra */
+    }
+    .graph-y {
+      width: 1px;
+      height: calc(100% - 40px); /* Altezza asse y, considerando i margini */
+      bottom: 20px; /* Posizione asse y più in basso */
+      left: 20px; /* Posizione asse y a sinistra */
+    }
+    .graph-label {
+      position: absolute;
+      font-size: 12px; /* Font size ridotto per le etichette */
+      color: #ffffff; /* White label */
+    }
+    .graph-label.x-axis:first-of-type {
+      bottom: 10px; /* Posizione etichetta x */
+      left: 20px; /* Etichetta 0 */
+    }
+    .graph-label.x-axis:last-of-type {
+      bottom: 10px; /* Posizione etichetta x */
+      right: 20px; /* Etichetta 1 */
+      left: auto; /* Annulla left per non sovrapporsi */
+    }
+    .graph-label.y-axis:first-of-type {
+      left: 5px; /* Posizione etichetta y */
+      bottom: 20px; /* Etichetta 0 */
+    }
+    .graph-label.y-axis:last-of-type {
+      left: 5px; /* Posizione etichetta y */
+      top: 10px; /* Etichetta 1 */
+      bottom: auto; /* Annulla bottom per non sovrapporsi */
+    }
+    .graph-label.time-label {
+      bottom: -5px; /* Posizione etichetta Tempo */
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .graph-label.position-label {
+      bottom: 50%;
+      left: -10px; /* Spostato più a sinistra */
+      transform: translateY(50%) rotate(-90deg);
+      transform-origin: center;
+    }
+    .graph-curve {
+      position: absolute;
+      stroke: #ff5722;
+      stroke-width: 2px;
+      fill: none;
+    }
+
+    /* Media Queries per la responsività all'interno dell'iframe */
+    @media (max-width: 768px) {
+        .container {
+            max-width: 100%; /* Full width on smaller screens */
+            padding: 0 10px; /* Aggiungi un piccolo padding orizzontale */
+            box-sizing: border-box; /* Includi padding nella larghezza */
+        }
+        .animation-area, .graph {
+            width: 100%; /* Larghezza piena del container */
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .track, .square, .graph-x {
+            left: 10px; /* Margini più piccoli */
+            width: calc(100% - 20px);
+        }
+        .square {
+            width: 25px; /* Quadrato più piccolo */
+            height: 25px;
+        }
+        .graph-label {
+            font-size: 10px; /* Font size ancora più ridotto */
+        }
+        .graph-x {
+            bottom: 20px;
+        }
+        .graph-y {
+            left: 10px;
+            bottom: 10px;
+            height: calc(100% - 20px);
+        }
+        .graph-label.x-axis:first-of-type { left: 10px; }
+        .graph-label.x-axis:last-of-type { right: 10px; }
+        .graph-label.y-axis:first-of-type { bottom: 10px; left: 0; }
+        .graph-label.y-axis:last-of-type { top: 5px; left: 0; }
+        .graph-label.time-label { bottom: -10px; }
+        .graph-label.position-label { left: -15px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="animation-area">
+      <div class="track"></div>
+      <div class="square"></div>
+    </div>
+    
+    <div class="graph">
+      <div class="graph-axis graph-x"></div>
+      <div class="graph-axis graph-y"></div>
+      <div class="graph-label x-axis">0</div> <div class="graph-label x-axis">1</div> <div class="graph-label y-axis">0</div> <div class="graph-label y-axis">1</div> <div class="graph-label time-label">Tempo (t)</div>
+      <div class="graph-label position-label">Posizione</div>
+    </div>
+  </div>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script>
+    // Funzione per ottenere i parametri URL
+    function getUrlParameter(name) {
+        name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+        var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+        var results = regex.exec(location.search);
+        return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+    }
+
+    // Qui currentEasingType DEVE prendere il valore dal parametro URL
+    const requestedEasing = getUrlParameter('easing');
+    let currentEasingType = requestedEasing || 'smoothstep'; // Fallback a smoothstep se non specificato
+
+    // Questo console.log è utile per il debugging: ti mostra cosa sta caricando l'iframe
+    console.log("esercizio_smootherstep_singolo.html loaded with easing:", currentEasingType);
+
+    const square = document.querySelector('.square');
+    const graph = document.querySelector('.graph');
+    
+    let animationId = null;
+    let startTime = null;
+    const DURATION = 3000;
+    
+    let START_X_GLOBAL; 
+    let END_X_GLOBAL;
+    let DISTANCE_GLOBAL;
+    let GRAPH_OFFSET_X_GLOBAL;
+    let GRAPH_OFFSET_Y_GLOBAL;
+    let GRAPH_WIDTH_GLOBAL;
+    let GRAPH_HEIGHT_GLOBAL;
+
+    function calculateDimensions() {
+        const animationArea = document.querySelector('.animation-area');
+        if (!graph || !animationArea || graph.offsetWidth === 0 || graph.offsetHeight === 0 || animationArea.offsetWidth === 0) {
+            return false;
+        }
+
+        START_X_GLOBAL = 20; 
+        END_X_GLOBAL = animationArea.offsetWidth - 20;
+        DISTANCE_GLOBAL = END_X_GLOBAL - START_X_GLOBAL;
+        
+        GRAPH_OFFSET_X_GLOBAL = 20; 
+        GRAPH_OFFSET_Y_GLOBAL = 20; 
+        GRAPH_WIDTH_GLOBAL = graph.offsetWidth - 40; 
+        GRAPH_HEIGHT_GLOBAL = graph.offsetHeight - 40; 
+        return true;
+    }
+
+    function drawCurve(easingType) { 
+      const existingCurve = document.querySelector('.graph-curve');
+      if (existingCurve) {
+        existingCurve.remove();
+      }
+      
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('width', graph.offsetWidth);
+      svg.setAttribute('height', graph.offsetHeight);
+      svg.style.position = 'absolute';
+      svg.style.top = '0';
+      svg.style.left = '0';
+      
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.classList.add('graph-curve');
+      
+      let d = `M ${GRAPH_OFFSET_X_GLOBAL},${GRAPH_HEIGHT_GLOBAL + GRAPH_OFFSET_Y_GLOBAL} `;  
+      
+      for (let i = 0; i <= 100; i++) {
+        const t = i / 100;
+        let y;
+        
+        switch (easingType) {
+          case 'smoothstep':
+            y = t * t * (3 - 2 * t);
+            break;
+          case 'smootherstep':
+            y = t * t * t * (t * (t * 6 - 15) + 10);
+            break;
+          default: // Fallback a smoothstep se il tipo non è riconosciuto (dovrebbe caricare smoothstep)
+            y = t * t * (3 - 2 * t);
+            break;
+        }
+        
+        const x = GRAPH_OFFSET_X_GLOBAL + t * GRAPH_WIDTH_GLOBAL;
+        const graphY = (GRAPH_HEIGHT_GLOBAL + GRAPH_OFFSET_Y_GLOBAL) - y * GRAPH_HEIGHT_GLOBAL;
+        d += `L ${x},${graphY} `;
+      }
+      
+      path.setAttribute('d', d);
+      svg.appendChild(path);
+      graph.appendChild(svg);
+    }
+    
+    // Le funzioni di easing che possono essere chiamate da questo file
+    const easingFunctions = {
+      'smoothstep': t => t * t * (3 - 2 * t),
+      'smootherstep': t => t * t * t * (t * (t * 6 - 15) + 10)
+    };
+    
+    function animate(timestamp) {
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+      
+      let t = (elapsed % DURATION) / DURATION;
+      
+      if (t >= 1) {
+        t = 1; 
+        startTime = timestamp; 
+      }
+      
+      // Qui si usa currentEasingType, che dovrebbe essere correttamente impostato dal parametro URL
+      const easedT = easingFunctions[currentEasingType](t); 
+      
+      const x = START_X_GLOBAL + easedT * DISTANCE_GLOBAL; 
+      square.style.left = `${x}px`;
+      
+      square.style.transform = `translateY(-50%)`;
+      
+      animationId = requestAnimationFrame(animate);
+    }
+    
+    window.addEventListener('load', () => {
+        const tryInitialSetup = () => {
+            if (calculateDimensions()) {
+                drawCurve(currentEasingType);
+                if (!animationId) {
+                    animationId = requestAnimationFrame(animate);
+                }
+            } else {
+                requestAnimationFrame(tryInitialSetup);
+            }
+        };
+        tryInitialSetup();
+    });
+
+    window.addEventListener('resize', () => {
+        calculateDimensions();
+        drawCurve(currentEasingType);
+    });
+  </script>
+</body>
+</html>
